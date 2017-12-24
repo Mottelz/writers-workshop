@@ -10,8 +10,8 @@ var index = require('./routes/index'); //index
 var app = express();
 
 //set view engine
-app.set('views', path.join(__dirname, 'views')); //where to store templates
-app.set('view engine', 'pug'); //using pugs as the template engine
+app.set('views', path.join(__dirname, 'views/pages')); //where to store templates
+app.set('view engine', 'ejs'); //using ejs as the template engine
 
 //load packages & configure app
 app.use(logger('dev')); //logs the requests and related technical data
