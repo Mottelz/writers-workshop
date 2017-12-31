@@ -7,7 +7,7 @@ const bodyParser = require('body-parser'); //used to parse url
 
 
 //routes
-const index = require('./routes/index'); //index
+const calls = require('./routes/calls'); //api calls
 const app = express();
 
 //set view engine
@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false })); //disallow nested objects
 app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
 
 //set directions
-app.use('/', index);
+app.use('/', calls);
 
 
 // catch 404 and forward to error handler
