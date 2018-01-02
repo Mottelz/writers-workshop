@@ -16,12 +16,16 @@ router.get('/about', (req, res) => {
     });
 });
 
+router.get('/init', (req, res) => {
+    database.initDB();
+    res.render('index');
+});
 
 //posts
 router.post('/addUser', (req, res) => {
     //TODO Verify User
     //TODO Sanitize request
-    database.addUser();
+    database.addUser('Mottel', 'Zirkind', 'mottel@mail.com');
     res.render('index');
 });
 
