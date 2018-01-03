@@ -1,33 +1,56 @@
 //packages
 const express = require('express'); //load app
 const router = express.Router(); //load router
+const sanitizer = require('sanitize')(); //load sanitizer
 
 //customs
 // const database = require('../routes/database.js');
 const database = require('../routes/litedata.js');
 
-//gets
+//Home page
 router.get('/', (req, res) => res.render('index'));
 
-
-router.get('/about', (req, res) => {
-    database.getUser(10, (result) => {
-        res.render('result', {mess: result});
-    });
+//GET a users info
+router.get('/user/:uid', (req, res) => {
+    //TODO Verify permission
+    //TODO Sanitize uid
+    let userID = req.params.uid;
+    database.getUser(userID, (user) => {res.send(user)});
 });
 
-router.get('/init', (req, res) => {
-    database.initDB();
-    res.render('index');
+//GET the metadata users' stories
+router.get('/stories/:uid', (req, res) => {
+    //TODO Verify permission
+    //TODO Sanitize uid
+    let userID = req.params.uid;
+    database.getStories(userID, (stories) => {res.send(stories)});
 });
 
-//posts
-router.post('/addUser', (req, res) => {
-    //TODO Verify User
-    //TODO Sanitize request
-    database.addUser('Mottel', 'Zirkind', 'mottel@mail.com');
-    res.render('index');
+//GET a story by id
+router.get('/story/:storyId', (req, res) => {
+    //TODO Verify permission
+    let storyID = reg.params.storyId;
+    database.getStory(storyID, (story) => {res.send(story)});
 });
+
+//TODO GET a review by id
+
+//TODO GET reviews by story
+
+//TODO POST a review
+
+//TODO POST a story
+
+//POST a new user
+router.post('/user', (req, res) => {
+    //TODO Verify permission
+    //TODO Sanitize data
+    let fname = req.body.fname;
+    let lname = req.body.lname;
+    let email = req.body.email;
+    database.addUser(fname, lname, email, (result) => {res.send(result)});
+});
+
 
 //export router
 module.exports = router;
