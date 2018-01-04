@@ -29,17 +29,46 @@ router.get('/stories/:uid', (req, res) => {
 //GET a story by id
 router.get('/story/:storyId', (req, res) => {
     //TODO Verify permission
-    let storyID = reg.params.storyId;
+    let storyID = req.params.storyId;
     database.getStory(storyID, (story) => {res.send(story)});
 });
 
-//TODO GET a review by id
+//GET a review by id
+router.get('/review/:revId', (req, res) => {
+    //TODO Verify permission
+    let reveiwID = req.params.revId;
+    database.getReview(reveiwID, (review)=>{res.send(review)});
+});
 
-//TODO GET reviews by story
+//GET reviews by story
+router.get('/reviews/:storyId', (req, res) => {
+    //TODO Verify permission
+    let storyID = req.params.storyId;
+    database.getReviews(storyID, (reviews) => {res.send(reviews)});
+});
 
-//TODO POST a review
+//POST a review
+router.post('/review', (req, res) => {
+    //TODO Verify permission
+    //TODO Sanitize data
+    let author = req.cookie; //TODO get this to actually access the user token
+    let story = req.body.story;
+    let category = req.body.category;
+    let content = req.body.content;
+    database.addReview(author, story, category, content, (result) => {res.send(result)});
+});
 
-//TODO POST a story
+//POST a story
+router.post('/story', (req, res) => {
+    //TODO Verify permission
+    //TODO Sanitize data
+    // let author = req.cookie; //TODO get this to actually access the user token
+    let author = req.body.writer;
+    let title = req.body.title;
+    let category = req.body.category;
+    let content = req.body.content;
+    database.addStory(title, category, author, content, (result)=>{res.send(result)});
+});
 
 //POST a new user
 router.post('/user', (req, res) => {
