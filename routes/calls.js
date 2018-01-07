@@ -1,7 +1,7 @@
 //packages
 const express = require('express'); //load app
 const router = express.Router(); //load router
-const sanitizer = require('sanitize')(); //load sanitizer
+
 
 //customs
 // const database = require('../routes/database.js');
@@ -13,45 +13,63 @@ router.get('/', (req, res) => res.render('index'));
 //GET a users info
 router.get('/user/:uid', (req, res) => {
     //TODO Verify permission
-    //TODO Sanitize uid
     let userID = req.params.uid;
-    database.getUser(userID, (user) => {res.send(user)});
+    if(!isNaN(userID)) {
+        database.getUser(userID, (user) => {res.send(user)});
+    } else {
+        res.send("No ID!");
+    }
 });
 
 //GET the metadata users' stories
 router.get('/stories/:uid', (req, res) => {
     //TODO Verify permission
-    //TODO Sanitize uid
     let userID = req.params.uid;
-    database.getStories(userID, (stories) => {res.send(stories)});
+    if(!isNaN(userID)) {
+        database.getStories(userID, (stories) => {res.send(stories)});
+    } else {
+        res.send("No ID!");
+    }
 });
 
 //GET a story by id
 router.get('/story/:storyId', (req, res) => {
     //TODO Verify permission
     let storyID = req.params.storyId;
-    database.getStory(storyID, (story) => {res.send(story)});
+    if(!isNaN(storyID)) {
+        database.getStory(storyID, (story) => {res.send(story)});
+    } else {
+        res.send("No ID!");
+    }
 });
 
 //GET a review by id
 router.get('/review/:revId', (req, res) => {
     //TODO Verify permission
     let reveiwID = req.params.revId;
-    database.getReview(reveiwID, (review)=>{res.send(review)});
+    if(!isNaN(reveiwID)) {
+        database.getReview(reveiwID, (review)=>{res.send(review)});
+    } else {
+        res.send("No ID!");
+    }
 });
 
 //GET reviews by story
 router.get('/reviews/:storyId', (req, res) => {
     //TODO Verify permission
     let storyID = req.params.storyId;
-    database.getReviews(storyID, (reviews) => {res.send(reviews)});
+    if(!isNaN(storyID)) {
+        database.getReviews(storyID, (reviews) => {res.send(reviews)});
+    } else {
+        res.send("No ID!");
+    }
 });
 
 //POST a review
 router.post('/review', (req, res) => {
     //TODO Verify permission
-    //TODO Sanitize data
-    let author = req.cookie; //TODO get this to actually access the user token
+    //let author = req.cookie; //TODO get this to actually access the user token
+    let author = req.body.writer;
     let story = req.body.story;
     let category = req.body.category;
     let content = req.body.content;
@@ -61,7 +79,6 @@ router.post('/review', (req, res) => {
 //POST a story
 router.post('/story', (req, res) => {
     //TODO Verify permission
-    //TODO Sanitize data
     // let author = req.cookie; //TODO get this to actually access the user token
     let author = req.body.writer;
     let title = req.body.title;
@@ -73,7 +90,6 @@ router.post('/story', (req, res) => {
 //POST a new user
 router.post('/user', (req, res) => {
     //TODO Verify permission
-    //TODO Sanitize data
     let fname = req.body.fname;
     let lname = req.body.lname;
     let email = req.body.email;
