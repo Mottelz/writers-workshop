@@ -71,7 +71,7 @@ router.get('/points/:uid', (req, res) => {
     //TODO Verify permission
     let userID = req.params.uid;
     if(!isNaN(userID)) {
-        database.getRawPointsData(userID, (points) => {algos.calculatePoints(points, res.send(points))});
+        database.getRawPointsData(userID, (rows) => {algos.calculatePoints(rows, (points) => res.send(points))});
     } else {
         res.send("No ID!");
     }
