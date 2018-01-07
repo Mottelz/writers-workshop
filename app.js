@@ -4,7 +4,7 @@ const path = require('path'); //used for filepaths
 const logger = require('morgan'); //used to log
 const cookieParser = require('cookie-parser'); //used to parse cookies
 const bodyParser = require('body-parser'); //used to parse url
-
+const login = require(path.join(__dirname, 'routes/login.js'));
 
 //routes
 const calls = require('./routes/calls'); //api calls
@@ -20,6 +20,8 @@ app.use(cookieParser()); //parse cookies
 app.use(bodyParser.json()); //parses the body of an HTTP request. Need to check out https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
 app.use(bodyParser.urlencoded({ extended: false })); //disallow nested objects
 app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
+app.use(login.passport.initialize());
+app.use(login.passport.session());
 
 //set directions
 app.use('/', calls);

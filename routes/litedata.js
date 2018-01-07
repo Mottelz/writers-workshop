@@ -49,7 +49,7 @@ exports.addReview = function (author, story, category, content, callback) {
 
 //Rate the review
 exports.rateReview = function (revid, rating, callback) {
-    dblite.run('UPDATE reviews SET rating = $rating WHERE id = $id', {id: revid, rating: rating}, function (err) {
+    dblite.run('UPDATE reviews SET rating = $rating WHERE reviews.id = $id', {id: revid, rating: rating}, function (err) {
         if(err) {
             console.log(err.message);
             if(callback){
@@ -77,7 +77,7 @@ exports.getUser = function (useid, callback) {
 
 //Get a story
 exports.getStory = function (storyid, callback) {
-    dblite.get('SELECT title, content, category, id, fname, lname FROM stories INNER JOIN writers ON author = id WHERE id = ?', [storyid], function (err, row) {
+    dblite.get('SELECT title, content, category, stories.id, fname, lname FROM stories INNER JOIN writers ON author = writers.id WHERE stories.id = ?', [storyid], function (err, row) {
         if(err){
             console.log(err.message);
             if(callback){

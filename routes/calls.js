@@ -1,14 +1,48 @@
 //packages
 const express = require('express'); //load app
 const router = express.Router(); //load router
-
+const env = require('dotenv').config();
+const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 
 //customs
 const database = require('../routes/litedata.js');
 const algos = require('../routes/algos.js');
-
+const login = require('../routes/login.js');
 //Home page
 router.get('/', (req, res) => res.render('index'));
+
+
+//Login
+router.get('/login', login.passport.authenticate( 'auth0', {
+    clientID: process.env.AUTH0_CLIENT_ID,
+    domain: process.env.AUTH0_DOMAIN,
+    redirectUri: process.env.AUTH0_CALLBACK_URL,
+    audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
+    responseType: 'code',
+    scope: 'openid profile'
+    }),
+    (req, res) => {
+    res.redirect('/');
+    }
+);
+
+//Logout
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+});
+
+
+//Callback
+router.get(
+    '/callback',
+    login.passport.authenticate('auth0', {
+        failureRedirect: '/'
+    }),
+    function(req, res) {
+        console.log(req.user);
+    }
+);
 
 //GET a users info
 router.get('/user/:uid', (req, res) => {
@@ -35,6 +69,7 @@ router.get('/stories/:uid', (req, res) => {
 //GET a story by id
 router.get('/story/:storyId', (req, res) => {
     //TODO Verify permission
+    console.log(req.user);
     let storyID = req.params.storyId;
     if(!isNaN(storyID)) {
         database.getStory(storyID, (story) => {res.send(story)});
