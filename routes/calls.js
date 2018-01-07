@@ -6,6 +6,7 @@ const router = express.Router(); //load router
 //customs
 // const database = require('../routes/database.js');
 const database = require('../routes/litedata.js');
+const algos = require('../routes/algos.js');
 
 //Home page
 router.get('/', (req, res) => res.render('index'));
@@ -65,13 +66,25 @@ router.get('/reviews/:storyId', (req, res) => {
     }
 });
 
+//GET points by userID
+router.get('/points/:uid', (req, res) => {
+    //TODO Verify permission
+    let userID = req.params.uid;
+    if(!isNaN(userID)) {
+        database.getRawPointsData(userID, (points) => {algos.calculatePoints(points, res.send(points))});
+    } else {
+        res.send("No ID!");
+    }
+});
+
+
 //POST a review
 router.post('/review', (req, res) => {
     //TODO Verify permission
     //let author = req.cookie; //TODO get this to actually access the user token
     let author = req.body.writer;
     let story = req.body.story;
-    let category = req.body.category;
+    let category = req.body.category.toLowerCase();
     let content = req.body.content;
     database.addReview(author, story, category, content, (result) => {res.send(result)});
 });
@@ -82,7 +95,7 @@ router.post('/story', (req, res) => {
     // let author = req.cookie; //TODO get this to actually access the user token
     let author = req.body.writer;
     let title = req.body.title;
-    let category = req.body.category;
+    let category = req.body.category.toLowerCase();
     let content = req.body.content;
     database.addStory(title, category, author, content, (result)=>{res.send(result)});
 });

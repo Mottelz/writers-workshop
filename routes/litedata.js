@@ -35,7 +35,7 @@ exports.addStory = function (title, category, author, content, callback) {
 
 //Add review
 exports.addReview = function (author, story, category, content, callback) {
-    dblite.run('INSERT INTO stories (author, story, content, category, created) VALUES (?1, ?2, ?3, ?4, datetime(\'now\'))', {1: author, 2: story, 3: content, 4: category}, function (err) {
+    dblite.run('INSERT INTO reviews (author, story, content, category, created) VALUES (?1, ?2, ?3, ?4, datetime(\'now\'))', {1: author, 2: story, 3: content, 4: category}, function (err) {
         if(err) {
             console.log(err.message);
             if(callback){
@@ -105,16 +105,31 @@ exports.getReviews = function (stoid, callback) {
 
 
 exports.getRawPointsData = function(uid, callback) {
-    dblite.all('SELECT reviews.category, COUNT(*) FROM reviews WHERE reviews.author = ? GROUP BY reviews.category', [uid], function (err, rows) {
-        if(err) {
-            console.log(err.message);
-            if(callback){
-                callback(err.message);
+    try {
+        dblite.all('SELECT reviews.category AS revCat, COUNT(*) AS revNum FROM reviews WHERE reviews.author = ?1 GROUP BY reviews.category', {1: uid}, function (err, revRows) {
+            if(err) {
+                throw err;
+            } else {
+                dblite.all('SELECT stories.category AS stoCat, COUNT(*) as stoNum FROM stories WHERE stories.author = ?1 GROUP BY stories.category', {1: uid}, function (err, storRows) {
+                    if(err){
+                        throw err;
+                    } else {
+                        if(revRows.length != 0 && storRows.length != 0){
+                            callback({reviews: revRows, stories: storRows});
+                        } else if (revRows.length == 0 && storRows.length == 0) {
+                            callback({reviews: null, stories: null});
+                        } else if (revRows.length == 0 && storRows.length != 0) {
+                            callback({reviews: null, stories: storRows});
+                        } else if (revRows.length != 0 && storRows.length == 0) {
+                            callback({reviews: revRows, stories: null});
+                        }
+                    }
+                });
             }
-        } else if (callback) {
-            callback(rows);
-        }
-    });
+        });
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 //Get the metadata for stories
