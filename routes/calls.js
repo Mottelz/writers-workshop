@@ -19,7 +19,7 @@ router.get('/login', login.passport.authenticate( 'auth0', {
     redirectUri: process.env.AUTH0_CALLBACK_URL,
     audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
     responseType: 'code',
-    scope: 'openid profile'
+    scope: 'openid email'
     }),
     (req, res) => {
     res.redirect('/');
@@ -40,7 +40,7 @@ router.get(
         failureRedirect: '/'
     }),
     function(req, res) {
-        console.log(req.user);
+        res.send(req.user._json);
     }
 );
 
