@@ -1,48 +1,13 @@
 //packages
 const express = require('express'); //load app
 const router = express.Router(); //load router
-const env = require('dotenv').config();
-const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 
 //customs
 const database = require('../routes/litedata.js');
 const algos = require('../routes/algos.js');
-const login = require('../routes/login.js');
 //Home page
 router.get('/', (req, res) => res.render('index'));
 
-
-//Login
-router.get('/login', login.passport.authenticate( 'auth0', {
-    clientID: process.env.AUTH0_CLIENT_ID,
-    domain: process.env.AUTH0_DOMAIN,
-    redirectUri: process.env.AUTH0_CALLBACK_URL,
-    audience: 'https://' + process.env.AUTH0_DOMAIN + '/userinfo',
-    responseType: 'code',
-    scope: 'openid email'
-    }),
-    (req, res) => {
-    res.redirect('/');
-    }
-);
-
-//Logout
-router.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
-});
-
-
-//Callback
-router.get(
-    '/callback',
-    login.passport.authenticate('auth0', {
-        failureRedirect: '/'
-    }),
-    function(req, res) {
-        res.send(req.user._json);
-    }
-);
 
 //GET a users info
 router.get('/user/:uid', (req, res) => {
