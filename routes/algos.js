@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 exports.calculatePoints = function (rows, callback) {
     let points = 0;
     let storyMulti = {tinyfict: 1, shorfict: 3, longfict: 5, shornfic: 2, longnfic: 5, shorpoem: 2, epicpoem: 4};
@@ -21,4 +23,34 @@ exports.calculatePoints = function (rows, callback) {
     if(callback){
         callback({points: points});
     }
+};
+
+exports.encryptPassword = function(password, callback) {
+    bcrypt.hash(password, 50, function (err, hash) {
+        if(err){
+            console.log(err);
+            if(callback){
+                callback(err);
+            }
+        } else if(callback){
+            callback(hash);
+        } else {
+            console.log(hash);
+        }
+    });
+};
+
+exports.verifyPassword = function (raw, encrypted, callback) {
+    bcrypt.compare(raw, encrypted, function (err, res) {
+        if(err){
+            console.log(err);
+            if(callback){
+                callback(err);
+            }
+        } else if(callback){
+            callback(res);
+        } else {
+            console.log(res);
+        }
+    });
 };

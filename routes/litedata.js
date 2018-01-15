@@ -1,13 +1,13 @@
 const sqlite3 = require('sqlite3').verbose();
-const dblite = new sqlite3.Database('./content/test.sqlite');
-// const dblite = new sqlite3.Database(':memory:');
+// const dblite = new sqlite3.Database('./content/test.sqlite');
+const dblite = new sqlite3.Database(':memory:');
 
-exports.initDB = function () {dblite.run('CREATE TABLE writers ( id INTEGER PRIMARY KEY, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL ); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;')};
+exports.initDB = function () {dblite.run('CREATE TABLE writers ( id INTEGER PRIMARY KEY, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;')};
 
 
 //Add user
-exports.addUser = function(fname, lname, email, callback){
-    dblite.run('INSERT INTO writers (fname, lname, email, created) VALUES (?1, ?2, ?3, datetime(\'now\'))', {1: fname, 2: lname, 3: email}, function (err) {
+exports.addUser = function(fname, lname, email, pword, callback){
+    dblite.run('INSERT INTO writers (fname, lname, email, pword, created) VALUES (?1, ?2, ?3, ?4, datetime(\'now\'))', {1: fname, 2: lname, 3: email, 4: pword}, function (err) {
         if(err) {
             console.log(err.message);
             if(callback){
@@ -61,9 +61,9 @@ exports.rateReview = function (revid, rating, callback) {
     });
 };
 
-//Get the user's info
-exports.getUser = function (useid, callback) {
-    dblite.get('SELECT fname, lname, email, id FROM writers WHERE id = ?', [useid], function (err, row) {
+//Get the user's info by email
+exports.getUser = function (email, callback) {
+    dblite.get('SELECT fname, lname, email, id, pword FROM writers WHERE email = ?', [email], function (err, row) {
         if(err){
             console.log(err.message);
             if(callback){
@@ -77,7 +77,7 @@ exports.getUser = function (useid, callback) {
 
 //Get a story
 exports.getStory = function (storyid, callback) {
-    dblite.get('SELECT title, content, category, stories.id, fname, lname FROM stories INNER JOIN writers ON author = writers.id WHERE stories.id = ?', [storyid], function (err, row) {
+    dblite.get('SELECT title, content, category, stories.id, writers.fname, writers.lname FROM stories INNER JOIN writers ON author = writers.id WHERE stories.id = ?', [storyid], function (err, row) {
         if(err){
             console.log(err.message);
             if(callback){

@@ -105,6 +105,7 @@ router.post('/user', (req, res) => {
     let fname = req.body.fname;
     let lname = req.body.lname;
     let email = req.body.email;
+    let pword = req.body.pword;
     database.addUser(fname, lname, email, (result) => {res.send(result)});
 });
 
