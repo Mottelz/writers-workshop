@@ -13,6 +13,7 @@ router.get('/', (req, res) => res.render('index'));
 //SETUP
 router.get('/init', (req, res) => {
     database.initDB();
+    res.render('index');
 });
 
 //GET a users info
