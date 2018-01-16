@@ -61,8 +61,22 @@ exports.rateReview = function (revid, rating, callback) {
     });
 };
 
+//Get the user's info by id
+exports.getUser = function (uid, callback) {
+    dblite.get('SELECT fname, lname, email, id, pword FROM writers WHERE writers.id = ?', [uid], function (err, row) {
+        if(err){
+            console.log(err.message);
+            if(callback){
+                callback(err.message);
+            }
+        } else if(callback){
+            callback(row);
+        }
+    });
+};
+
 //Get the user's info by email
-exports.getUser = function (email, callback) {
+exports.getUserByEmail = function (email, callback) {
     dblite.get('SELECT fname, lname, email, id, pword FROM writers WHERE email = ?', [email], function (err, row) {
         if(err){
             console.log(err.message);
@@ -74,6 +88,7 @@ exports.getUser = function (email, callback) {
         }
     });
 };
+
 
 //Get a story
 exports.getStory = function (storyid, callback) {
