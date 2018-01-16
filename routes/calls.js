@@ -10,6 +10,10 @@ const algos = require('../routes/algos.js');
 //Home page
 router.get('/', (req, res) => res.render('index'));
 
+//SETUP
+router.get('/init', (req, res) => {
+    database.initDB();
+});
 
 //GET a users info
 router.get('/user/:uid', (req, res) => {
