@@ -5,6 +5,8 @@ const router = express.Router(); //load router
 //customs
 const database = require('../routes/litedata.js');
 const algos = require('../routes/algos.js');
+
+
 //Home page
 router.get('/', (req, res) => res.render('index'));
 
