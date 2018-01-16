@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
-// const dblite = new sqlite3.Database('./content/test.sqlite');
-const dblite = new sqlite3.Database(':memory:');
+const dblite = new sqlite3.Database('./content/test.sqlite');
+// const dblite = new sqlite3.Database(':memory:');
 
 exports.initDB = function () {dblite.run('CREATE TABLE writers ( id INTEGER PRIMARY KEY, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;')};
 
@@ -63,7 +63,7 @@ exports.rateReview = function (revid, rating, callback) {
 
 //Get the user's info by id
 exports.getUser = function (uid, callback) {
-    dblite.get('SELECT fname, lname, email, id, pword FROM writers WHERE writers.id = ?', [uid], function (err, row) {
+    dblite.get('SELECT fname, lname, email, id  FROM writers WHERE writers.id = ?', [uid], function (err, row) {
         if(err){
             console.log(err.message);
             if(callback){
