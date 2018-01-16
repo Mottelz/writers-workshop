@@ -101,12 +101,13 @@ router.post('/story', (req, res) => {
 
 //POST a new user
 router.post('/user', (req, res) => {
-    //TODO Verify permission
     let fname = req.body.fname;
     let lname = req.body.lname;
     let email = req.body.email;
     let pword = req.body.pword;
-    database.addUser(fname, lname, email, (result) => {res.send(result)});
+    console.log(fname, lname, email, pword);
+    algos.encryptPassword(pword, (encrypted) => {database.addUser(fname, lname, email, encrypted, (result) => {res.send(result)});})
+
 });
 
 

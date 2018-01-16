@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+// const database = require('../routes/litedata.js');
 
 exports.calculatePoints = function (rows, callback) {
     let points = 0;
@@ -26,7 +27,8 @@ exports.calculatePoints = function (rows, callback) {
 };
 
 exports.encryptPassword = function(password, callback) {
-    bcrypt.hash(password, 50, function (err, hash) {
+    bcrypt.hash(password, 10, function (err, hash) {
+        console.log(hash);
         if(err){
             console.log(err);
             if(callback){
