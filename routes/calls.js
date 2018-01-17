@@ -10,11 +10,12 @@ const algos = require('../routes/algos.js');
 //Home page
 router.get('/', (req, res) => res.render('index'));
 
-//SETUP
-router.get('/init', (req, res) => {
-    database.initDB();
-    res.render('index');
+router.post('/login', (req,res) => {
+    let email = req.body.email;
+    let pword = req.body.pword;
+    database.getUserByEmail(email, (row)=>{algos.verifyPassword(pword, row.pword, (result) => res.send(result))});
 });
+
 
 //GET a users info
 router.get('/user/:uid', (req, res) => {
@@ -112,11 +113,9 @@ router.post('/user', (req, res) => {
     let lname = req.body.lname;
     let email = req.body.email;
     let pword = req.body.pword;
-    console.log(fname, lname, email, pword);
     algos.encryptPassword(pword, (encrypted) => {database.addUser(fname, lname, email, encrypted, (result) => {res.send(result)});})
 
 });
-
 
 //export router
 module.exports = router;

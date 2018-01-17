@@ -28,7 +28,6 @@ exports.calculatePoints = function (rows, callback) {
 
 exports.encryptPassword = function(password, callback) {
     bcrypt.hash(password, 10, function (err, hash) {
-        console.log(hash);
         if(err){
             console.log(err);
             if(callback){
