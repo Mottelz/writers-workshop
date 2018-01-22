@@ -30,6 +30,7 @@ router.post('/login', (req,res) => {
 router.get('/logout', (req, res) => {
     if (req.session.User && req.cookies.email) {
         res.clearCookie('email');
+        res.clearCookie('id');
         res.redirect('/');
     } else {
         res.redirect('/login');
@@ -37,10 +38,9 @@ router.get('/logout', (req, res) => {
 });
 
 
-//GET a users info
-router.get('/user/:uid', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
-    let userID = req.params.uid;
+//GET a user's info
+router.get('/user', algos.sessionChecker, (req, res) => {
+    let userID = req.session.User.id;
     if(!isNaN(userID)) {
         database.getUser(userID, (user) => {res.send(user)});
     } else {
@@ -50,9 +50,7 @@ router.get('/user/:uid', algos.sessionChecker, (req, res) => {
 
 //GET the metadata users' stories
 router.get('/stories/:uid', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
     let userID = req.params.uid;
-    console.log(req.session);
     if(!isNaN(userID)) {
         database.getStories(userID, (stories) => {res.send(stories)});
     } else {
@@ -72,7 +70,6 @@ router.get('/story/:storyId', algos.sessionChecker, (req, res) => {
 
 //GET a review by id
 router.get('/review/:revId', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
     let reveiwID = req.params.revId;
     if(!isNaN(reveiwID)) {
         database.getReview(reveiwID, (review)=>{res.send(review)});
@@ -83,7 +80,6 @@ router.get('/review/:revId', algos.sessionChecker, (req, res) => {
 
 //GET reviews by story
 router.get('/reviews/:storyId', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
     let storyID = req.params.storyId;
     if(!isNaN(storyID)) {
         database.getReviews(storyID, (reviews) => {res.send(reviews)});
@@ -93,22 +89,16 @@ router.get('/reviews/:storyId', algos.sessionChecker, (req, res) => {
 });
 
 //GET points by userID
-router.get('/points/:uid', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
-    let userID = req.params.uid;
-    if(!isNaN(userID)) {
+router.get('/points', algos.sessionChecker, (req, res) => {
+    let userID = req.session.User.id;
         database.getRawPointsData(userID, (rows) => {algos.calculatePoints(rows, (points) => res.send(points))});
-    } else {
-        res.send("No ID!");
-    }
 });
 
 
 //POST a review
 router.post('/review', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
-    //let author = req.cookie; //TODO get this to actually access the user token
-    let author = req.body.writer;
+    //TODO You can currently add a review to your own story.
+    let author = req.session.User.id;
     let story = req.body.story;
     let category = req.body.category.toLowerCase();
     let content = req.body.content;
@@ -117,9 +107,7 @@ router.post('/review', algos.sessionChecker, (req, res) => {
 
 //POST a story
 router.post('/story', algos.sessionChecker, (req, res) => {
-    //TODO Verify permission
-    // let author = req.cookie; //TODO get this to actually access the user token
-    let author = req.body.writer;
+    let author = req.session.User.id;
     let title = req.body.title;
     let category = req.body.category.toLowerCase();
     let content = req.body.content;
