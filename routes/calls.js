@@ -10,10 +10,31 @@ const algos = require('../routes/algos.js');
 //Home page
 router.get('/', (req, res) => res.render('index'));
 
+//login
 router.post('/login', (req,res) => {
     let email = req.body.email;
     let pword = req.body.pword;
-    database.getUserByEmail(email, (row)=>{algos.verifyPassword(pword, row.pword, (result) => res.send(result))});
+    database.getUserByEmail(email, (row)=>{
+        algos.verifyPassword(pword, row.pword,
+            (result) =>
+            {
+                if(result){
+                    req.session.User = {email:row.email, id: row.id,};
+                    console.log(req.session.User);
+                    res.send(req.session.User);
+                }
+            })
+    });
+});
+
+//logout
+router.get('/logout', (req, res) => {
+    if (req.session.user && req.cookies.email) {
+        res.clearCookie('email');
+        res.redirect('/');
+    } else {
+        res.redirect('/login');
+    }
 });
 
 

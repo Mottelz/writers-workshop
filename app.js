@@ -4,6 +4,8 @@ const path = require('path'); //used for filepaths
 const logger = require('morgan'); //used to log
 const cookieParser = require('cookie-parser'); //used to parse cookies
 const bodyParser = require('body-parser'); //used to parse url
+const session = require('express-session');
+
 
 //routes
 const calls = require('./routes/calls'); //api calls
@@ -17,11 +19,29 @@ app.set('view engine', 'ejs'); //using ejs as the template engine
 app.use(logger('dev')); //logs the requests and related technical data
 app.use(cookieParser()); //parse cookies
 app.use(bodyParser.json()); //parses the body of an HTTP request. Need to check out https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
-app.use(bodyParser.urlencoded({ extended: false })); //disallow nested objects
+app.use(bodyParser.urlencoded({ extended: true })); //allow nested objects
 app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
+app.use(session({
+    key:'email',
+    secret: 'THEspoon1sl0st',
+    resave: false,
+    saveUninitialized:false,
+    cookie:{
+        expires: 3628800000 //six weeks in milliseconds.
+    }
+}));
 
 //set directions
 app.use('/', calls);
+
+//Confirm cookie is valid.
+app.use((req, res, next) => {
+    if (req.cookies.email && !req.session.user) {
+        res.clearCookie('email');
+    }
+    next();
+});
+
 
 
 // catch 404 and forward to error handler
