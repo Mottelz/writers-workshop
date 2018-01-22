@@ -20,8 +20,7 @@ router.post('/login', (req,res) => {
             {
                 if(result){
                     req.session.User = {email:row.email, id: row.id,};
-                    console.log(req.session.User);
-                    res.send(req.session.User);
+                    res.send("Welcome");
                 }
             })
     });
@@ -29,7 +28,7 @@ router.post('/login', (req,res) => {
 
 //logout
 router.get('/logout', (req, res) => {
-    if (req.session.user && req.cookies.email) {
+    if (req.session.User && req.cookies.email) {
         res.clearCookie('email');
         res.redirect('/');
     } else {
@@ -39,7 +38,7 @@ router.get('/logout', (req, res) => {
 
 
 //GET a users info
-router.get('/user/:uid', (req, res) => {
+router.get('/user/:uid', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     let userID = req.params.uid;
     if(!isNaN(userID)) {
@@ -50,9 +49,10 @@ router.get('/user/:uid', (req, res) => {
 });
 
 //GET the metadata users' stories
-router.get('/stories/:uid', (req, res) => {
+router.get('/stories/:uid', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     let userID = req.params.uid;
+    console.log(req.session);
     if(!isNaN(userID)) {
         database.getStories(userID, (stories) => {res.send(stories)});
     } else {
@@ -61,19 +61,17 @@ router.get('/stories/:uid', (req, res) => {
 });
 
 //GET a story by id
-router.get('/story/:storyId', (req, res) => {
-    //TODO Verify permission
-    console.log(req.user);
-    let storyID = req.params.storyId;
-    if(!isNaN(storyID)) {
-        database.getStory(storyID, (story) => {res.send(story)});
-    } else {
-        res.send("No ID!");
-    }
+router.get('/story/:storyId', algos.sessionChecker, (req, res) => {
+        let storyID = req.params.storyId;
+        if(!isNaN(storyID)) {
+            database.getStory(storyID, (story) => {res.send(story)});
+        } else {
+            res.send("No ID!");
+        }
 });
 
 //GET a review by id
-router.get('/review/:revId', (req, res) => {
+router.get('/review/:revId', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     let reveiwID = req.params.revId;
     if(!isNaN(reveiwID)) {
@@ -84,7 +82,7 @@ router.get('/review/:revId', (req, res) => {
 });
 
 //GET reviews by story
-router.get('/reviews/:storyId', (req, res) => {
+router.get('/reviews/:storyId', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     let storyID = req.params.storyId;
     if(!isNaN(storyID)) {
@@ -95,7 +93,7 @@ router.get('/reviews/:storyId', (req, res) => {
 });
 
 //GET points by userID
-router.get('/points/:uid', (req, res) => {
+router.get('/points/:uid', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     let userID = req.params.uid;
     if(!isNaN(userID)) {
@@ -107,7 +105,7 @@ router.get('/points/:uid', (req, res) => {
 
 
 //POST a review
-router.post('/review', (req, res) => {
+router.post('/review', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     //let author = req.cookie; //TODO get this to actually access the user token
     let author = req.body.writer;
@@ -118,7 +116,7 @@ router.post('/review', (req, res) => {
 });
 
 //POST a story
-router.post('/story', (req, res) => {
+router.post('/story', algos.sessionChecker, (req, res) => {
     //TODO Verify permission
     // let author = req.cookie; //TODO get this to actually access the user token
     let author = req.body.writer;

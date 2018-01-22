@@ -58,7 +58,9 @@ exports.verifyPassword = function (raw, encrypted, callback) {
 
 // middleware function to check for logged-in users
 exports.sessionChecker = (req, res, next) => {
-    if (req.session.user && req.cookies.user_sid) {
+    if(!req.session.User){
+        res.redirect('/login');
+    } else if (!req.session.User.email || !req.session.User.id) {
         res.redirect('/login');
     } else {
         next();

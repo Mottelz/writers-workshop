@@ -36,6 +36,7 @@ app.use('/', calls);
 
 //Confirm cookie is valid.
 app.use((req, res, next) => {
+    console.log("trigger 1");
     if (req.cookies.email && !req.session.user) {
         res.clearCookie('email');
     }
