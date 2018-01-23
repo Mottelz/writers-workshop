@@ -8,7 +8,7 @@ const algos = require('../routes/algos.js');
 
 
 //Home page
-router.get('/', (req, res) => res.render('index'));
+// router.get('/', (req, res) => res.render('index'));
 
 //login
 router.post('/login', (req,res) => {
@@ -39,8 +39,9 @@ router.get('/logout', (req, res) => {
 
 
 //GET a user's info
-router.get('/user', algos.sessionChecker, (req, res) => {
-    let userID = req.session.User.id;
+router.get('/user/:uid', /*algos.sessionChecker,*/ (req, res) => {
+    //let userID = req.session.User.id;
+    let userID = req.params.uid;
     if(!isNaN(userID)) {
         database.getUser(userID, (user) => {res.send(user)});
     } else {
