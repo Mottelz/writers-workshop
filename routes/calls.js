@@ -19,8 +19,9 @@ router.post('/login', (req,res) => {
             (result) =>
             {
                 if(result){
-                    req.session.User = {email:row.email, id: row.id,};
-                    res.send("Welcome");
+                    req.session.User = {email:row.email, id: row.id};
+                    let userID = row.id;
+                    database.getUser(userID, (user) => {res.send(user)});
                 }
             })
     });

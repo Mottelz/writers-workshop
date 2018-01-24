@@ -1,7 +1,8 @@
 var app = new Vue({
-    el:"#app",
+    el:"#login",
     data: {
-        title: 'Whoopi!!!',
+        email: null,
+        pword: null,
         user: null
     },
     methods: {
@@ -10,6 +11,16 @@ var app = new Vue({
                 this.user = result.data;
             }).catch((err)=>{
                 console.log(err);
+            })
+        },
+        login: function () {
+            axios.post('/login', {email: this.email, pword: this.pword})
+                .then((result)=>{
+                    this.user = result.data;
+                    console.log(this.user);
+                })
+                .catch((err)=>{
+                    console.log(err);
             })
         }
     }

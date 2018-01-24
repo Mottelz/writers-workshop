@@ -20,7 +20,9 @@ app.use(logger('dev')); //logs the requests and related technical data
 app.use(cookieParser()); //parse cookies
 app.use(bodyParser.json()); //parses the body of an HTTP request. Need to check out https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
 app.use(bodyParser.urlencoded({ extended: true })); //allow nested objects
-app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
+// app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
+app.use(express.static(path.join(__dirname, 'vue'))); //load vue
+
 app.use(session({
     key:'email',
     secret: 'THEspoon1sl0st',
@@ -41,10 +43,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-
-//vue thingy
-app.use(express.static("./vue"));
-
 
 
 // catch 404 and forward to error handler
