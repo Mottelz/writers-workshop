@@ -12,7 +12,7 @@
     "test": "nodemon ./bin/www"
   },
   "author": "Mottel Zirkind",
-  "license": "MIT",
+  "license": "BSD",
   "dependencies": {
     "axios": "^0.17.1",
     "bcrypt": "^1.0.3",
