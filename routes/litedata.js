@@ -106,7 +106,7 @@ exports.getStory = function (storyid, callback) {
 
 //Get the metadata for reviews by story
 exports.getReviews = function (stoid, callback) {
-    dblite.all('SELECT reviews.id, reviews.created, reviews.author, story, reviews.category, writers.fname, writers.lname FROM reviews INNER JOIN writers, stories ON author = writers.id story = stories.id WHERE story = ?', [stoid], function(err, rows) {
+    dblite.all('SELECT reviews.id, reviews.created, reviews.author, reviews.story, reviews.category FROM reviews WHERE reviews.story = ?', [stoid], function(err, rows) {
         if(err) {
             console.log(err.message);
             if(callback){
@@ -163,7 +163,7 @@ exports.getStories = function (useid, callback) {
 
 //Get a review
 exports.getReview = function (revid, callback) {
-    dblite.get('SELECT fname, lname, email, id WHERE id = ?', [useid], function (err, row) {
+    dblite.get('SELECT reviews.id, reviews.created, reviews.author, story, reviews.category, reviews.content, writers.fname, writers.lname FROM reviews INNER JOIN writers ON author = writers.id WHERE reviews.id = ?', [revid], function (err, row) {
         if (err) {
             console.log(err.message);
             if(callback){
