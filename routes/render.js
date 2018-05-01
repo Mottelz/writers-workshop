@@ -8,10 +8,12 @@ const algos = require('../routes/algos.js');
 
 
 //Home page
-// router.get('/', (req, res) => res.render('index'));
+router.get('/', (req, res) => res.render('login', {title: 'Login'}));
+
+router.get('/signup', (req,res) => res.render('signup', {title: 'Sign Up'}));
 
 //login
-router.post('/api/login', (req,res) => {
+router.post('/login', (req,res) => {
     let email = req.body.email;
     let pword = req.body.pword;
     database.getUserByEmail(email, (row)=>{
@@ -28,7 +30,7 @@ router.post('/api/login', (req,res) => {
 });
 
 //logout
-router.get('/api/logout', (req, res) => {
+router.get('/logout', (req, res) => {
     if (req.session.User && req.cookies.email) {
         res.clearCookie('email');
         res.clearCookie('id');
@@ -40,7 +42,7 @@ router.get('/api/logout', (req, res) => {
 
 
 //GET a user's info
-router.get('/api/user/:uid', /*algos.sessionChecker,*/ (req, res) => {
+router.get('/user/:uid', /*algos.sessionChecker,*/ (req, res) => {
     //let userID = req.session.User.id;
     let userID = req.params.uid;
     if(!isNaN(userID)) {
@@ -51,7 +53,7 @@ router.get('/api/user/:uid', /*algos.sessionChecker,*/ (req, res) => {
 });
 
 //GET the metadata users' stories
-router.get('/api/stories/:uid', algos.sessionChecker, (req, res) => {
+router.get('/stories/:uid', algos.sessionChecker, (req, res) => {
     let userID = req.params.uid;
     if(!isNaN(userID)) {
         database.getStories(userID, (stories) => {res.send(stories)});
@@ -61,7 +63,7 @@ router.get('/api/stories/:uid', algos.sessionChecker, (req, res) => {
 });
 
 //GET a story by id
-router.get('/api/story/:storyId', algos.sessionChecker, (req, res) => {
+router.get('/story/:storyId', algos.sessionChecker, (req, res) => {
         let storyID = req.params.storyId;
         if(!isNaN(storyID)) {
             database.getStory(storyID, (story) => {res.send(story)});
@@ -71,7 +73,7 @@ router.get('/api/story/:storyId', algos.sessionChecker, (req, res) => {
 });
 
 //GET a review by id
-router.get('/api/review/:revId', algos.sessionChecker, (req, res) => {
+router.get('/review/:revId', algos.sessionChecker, (req, res) => {
     let reveiwID = req.params.revId;
     if(!isNaN(reveiwID)) {
         database.getReview(reveiwID, (review)=>{res.send(review)});
@@ -81,7 +83,7 @@ router.get('/api/review/:revId', algos.sessionChecker, (req, res) => {
 });
 
 //GET reviews by story
-router.get('/api/reviews/:storyId', algos.sessionChecker, (req, res) => {
+router.get('/reviews/:storyId', algos.sessionChecker, (req, res) => {
     let storyID = req.params.storyId;
     if(!isNaN(storyID)) {
         database.getReviews(storyID, (reviews) => {res.send(reviews)});
@@ -91,14 +93,14 @@ router.get('/api/reviews/:storyId', algos.sessionChecker, (req, res) => {
 });
 
 //GET points by userID
-router.get('/api/points', algos.sessionChecker, (req, res) => {
+router.get('/points', algos.sessionChecker, (req, res) => {
     let userID = req.session.User.id;
         database.getRawPointsData(userID, (rows) => {algos.calculatePoints(rows, (points) => res.send(points))});
 });
 
 
 //POST a review
-router.post('/api/review', algos.sessionChecker, (req, res) => {
+router.post('/review', algos.sessionChecker, (req, res) => {
     //TODO You can currently add a review to your own story.
     let author = req.session.User.id;
     let story = req.body.story;
@@ -108,7 +110,7 @@ router.post('/api/review', algos.sessionChecker, (req, res) => {
 });
 
 //POST a story
-router.post('/api/story', algos.sessionChecker, (req, res) => {
+router.post('/story', algos.sessionChecker, (req, res) => {
     let author = req.session.User.id;
     let title = req.body.title;
     let category = req.body.category.toLowerCase();
@@ -117,7 +119,7 @@ router.post('/api/story', algos.sessionChecker, (req, res) => {
 });
 
 //POST a new user
-router.post('/api/user', (req, res) => {
+router.post('/user', (req, res) => {
     let fname = req.body.fname;
     let lname = req.body.lname;
     let email = req.body.email;

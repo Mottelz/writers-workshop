@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const dblite = new sqlite3.Database('./content/test.sqlite');
 // const dblite = new sqlite3.Database(':memory:');
 
-exports.initDB = function () {dblite.run('CREATE TABLE writers ( id INTEGER PRIMARY KEY, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;')};
+exports.initDB = function () {dblite.run('CREATE TABLE writers ( id INTEGER PRIMARY KEY, bonus INTEGER, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;')};
 
 
 //Add user
@@ -121,56 +121,64 @@ exports.getReviews = function (stoid, callback) {
 
 exports.getRawPointsData = function(uid, callback) {
     try {
-        dblite.all('SELECT reviews.category AS revCat, COUNT(*) AS revNum FROM reviews WHERE reviews.author = ?1 GROUP BY reviews.category', {1: uid}, function (err, revRows) {
-            if(err) {
-                throw err;
-            } else {
-                dblite.all('SELECT stories.category AS stoCat, COUNT(*) as stoNum FROM stories WHERE stories.author = ?1 GROUP BY stories.category', {1: uid}, function (err, storRows) {
-                    if(err){
-                        throw err;
-                    } else {
-                        if(revRows.length != 0 && storRows.length != 0){
-                            callback({reviews: revRows, stories: storRows});
-                        } else if (revRows.length == 0 && storRows.length == 0) {
-                            callback({reviews: null, stories: null});
-                        } else if (revRows.length == 0 && storRows.length != 0) {
-                            callback({reviews: null, stories: storRows});
-                        } else if (revRows.length != 0 && storRows.length == 0) {
-                            callback({reviews: revRows, stories: null});
+        dblite.get('SELECT bonus FROM writers WHERE id = ?1', {1: uid}, function (err, bonus) {
+                if(err) {
+                    throw err;
+                } else {
+                    dblite.all('SELECT reviews.category AS revCat, COUNT(*) AS revNum FROM reviews WHERE reviews.author = ?1 GROUP BY reviews.category', {1: uid}, function (err, revRows) {
+                        if(err) {
+                            throw err;
+                        } else {
+                            dblite.all('SELECT stories.category AS stoCat, COUNT(*) as stoNum FROM stories WHERE stories.author = ?1 GROUP BY stories.category', {1: uid}, function (err, storRows) {
+                                if(err){
+                                    throw err;
+                                } else {
+                                    if(revRows.length != 0 && storRows.length != 0){
+                                        callback({reviews: revRows, stories: storRows});
+                                    } else if (revRows.length == 0 && storRows.length == 0) {
+                                        callback({reviews: null, stories: null});
+                                    } else if (revRows.length == 0 && storRows.length != 0) {
+                                        callback({reviews: null, stories: storRows});
+                                    } else if (revRows.length != 0 && storRows.length == 0) {
+                                        callback({reviews: revRows, stories: null});
+                                    }
+                                }
+                            });
                         }
-                    }
-                });
+                    });
+                }
             }
-        });
-    } catch (err) {
-        console.log(err);
+        );
     }
-};
+    catch (err) {
+            console.log(err);
+        }
+    };
 
 //Get the metadata for stories
-exports.getStories = function (useid, callback) {
-    dblite.all('SELECT title, stories.id, author, category, stories.created, fname, lname FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?', [useid], function(err, rows) {
-        if(err) {
-            console.log(err);
-            if(callback){
-                callback(err.message);
+    exports.getStories = function (useid, callback) {
+        dblite.all('SELECT title, stories.id, author, category, stories.created, fname, lname FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?', [useid], function(err, rows) {
+            if(err) {
+                console.log(err);
+                if(callback){
+                    callback(err.message);
+                }
+            } else if (callback) {
+                callback(rows);
             }
-        } else if (callback) {
-            callback(rows);
-        }
-    });
-};
+        });
+    };
 
 //Get a review
-exports.getReview = function (revid, callback) {
-    dblite.get('SELECT reviews.id, reviews.created, reviews.author, story, reviews.category, reviews.content, writers.fname, writers.lname FROM reviews INNER JOIN writers ON author = writers.id WHERE reviews.id = ?', [revid], function (err, row) {
-        if (err) {
-            console.log(err.message);
-            if(callback){
-                callback(err.message);
+    exports.getReview = function (revid, callback) {
+        dblite.get('SELECT reviews.id, reviews.created, reviews.author, story, reviews.category, reviews.content, writers.fname, writers.lname FROM reviews INNER JOIN writers ON author = writers.id WHERE reviews.id = ?', [revid], function (err, row) {
+            if (err) {
+                console.log(err.message);
+                if(callback){
+                    callback(err.message);
+                }
+            } else if (callback) {
+                callback(row);
             }
-        } else if (callback) {
-            callback(row);
-        }
-    });
-};
+        });
+    };

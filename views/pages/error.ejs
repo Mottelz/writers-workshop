@@ -1,13 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<body class="container">
-
-<main class="container" style="margin-top: 6%">
-    <div class="jumbotron">
-        <h1>Error</h1>
-        <p><%=message %></p>
-    </div>
+<% include ../partials/head-login-signup.ejs %>
+<body>
+<main id="login">
+    <h1><%= title %></h1>
+    <p><%= message %></p>
 </main>
-<% include ../partials/footer %>
 </body>
 </html>

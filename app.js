@@ -8,7 +8,8 @@ const session = require('express-session');
 
 
 //routes
-const calls = require('./routes/calls'); //api calls
+// const calls = require('./routes/calls'); //api calls
+const calls = require('./routes/render'); //renderer calls
 const app = express();
 
 //set view engine
@@ -20,8 +21,7 @@ app.use(logger('dev')); //logs the requests and related technical data
 app.use(cookieParser()); //parse cookies
 app.use(bodyParser.json()); //parses the body of an HTTP request. Need to check out https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/
 app.use(bodyParser.urlencoded({ extended: true })); //allow nested objects
-// app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
-app.use(express.static(path.join(__dirname, 'vue'))); //load vue
+app.use(express.static(path.join(__dirname, 'public'))); //set the static for css and related things.
 
 app.use(session({
     key:'email',
@@ -59,7 +59,8 @@ app.use(function(err, req, res, next) {
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
     res.status(err.status || 500);
-    res.render('error', {message: err.message});
+    res.render('error', {message: err.message, title: 'Error'});
+    console.log(err.message);
 });
 
 

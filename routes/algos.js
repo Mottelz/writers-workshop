@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-// const database = require('../routes/litedata.js');
+
 
 exports.calculatePoints = function (rows, callback) {
     let points = 0;
@@ -18,6 +18,11 @@ exports.calculatePoints = function (rows, callback) {
         for(let i = 0; i < rows.stories.length; i++) {
             points -= (storyMulti[rows.stories[i].stoCat] * rows.stories[i].stoNum);
         }
+    }
+
+    if(points < 0){
+        points = 0;
+        points += rows.bonus;
     }
 
     //callback with result
