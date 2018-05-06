@@ -1,73 +1,100 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
+exports.calculatePoints = function(rows, callback) {
+  let points = 0;
+  let storyMulti = {
+    tinyfict: 1,
+    shorfict: 3,
+    longfict: 5,
+    shornfic: 2,
+    longnfic: 5,
+    shorpoem: 2,
+    epicpoem: 4
+  };
+  let reviewMulti = {
+    tinyfict: 1,
+    shorfict: 2,
+    longfict: 3,
+    shornfic: 1,
+    longnfic: 3,
+    shorpoem: 1,
+    epicpoem: 3
+  };
 
-exports.calculatePoints = function (rows, callback) {
-    let points = 0;
-    let storyMulti = {tinyfict: 1, shorfict: 3, longfict: 5, shornfic: 2, longnfic: 5, shorpoem: 2, epicpoem: 4};
-    let reviewMulti = {tinyfict: 1, shorfict: 2, longfict: 3, shornfic: 1, longnfic: 3, shorpoem: 1, epicpoem: 3};
-
-    //if reviews calculate
-    if(rows.reviews!=null){
-        for(let i = 0; i < rows.reviews.length; i++) {
-            points += (reviewMulti[rows.reviews[i].revCat] * rows.reviews[i].revNum);
-        }
+  //if reviews calculate
+  if (rows.reviews != null) {
+    for (let i = 0; i < rows.reviews.length; i++) {
+      points += reviewMulti[rows.reviews[i].revCat] * rows.reviews[i].revNum;
     }
+  }
 
-    //if stories calculate
-    if(rows.stories!= null){
-        for(let i = 0; i < rows.stories.length; i++) {
-            points -= (storyMulti[rows.stories[i].stoCat] * rows.stories[i].stoNum);
-        }
+  //if stories calculate
+  if (rows.stories != null) {
+    for (let i = 0; i < rows.stories.length; i++) {
+      points -= storyMulti[rows.stories[i].stoCat] * rows.stories[i].stoNum;
     }
+  }
 
-    if(points < 0){
-        points = 0;
-        points += rows.bonus;
-    }
+  if (points < 0) {
+    points = 0;
+    points += rows.bonus;
+  }
 
-    //callback with result
-    if(callback){
-        callback({points: points});
-    }
+  //callback with result
+  if (callback) {
+    callback({ points: points });
+  }
 };
 
 exports.encryptPassword = function(password, callback) {
-    bcrypt.hash(password, 10, function (err, hash) {
-        if(err){
-            console.log(err);
-            if(callback){
-                callback(err);
-            }
-        } else if(callback){
-            callback(hash);
-        } else {
-            console.log(hash);
-        }
-    });
+  bcrypt.hash(password, 10, function(err, hash) {
+    if (err) {
+      console.log(err);
+      if (callback) {
+        callback(err);
+      }
+    } else if (callback) {
+      callback(hash);
+    } else {
+      console.log(hash);
+    }
+  });
 };
 
-exports.verifyPassword = function (raw, encrypted, callback) {
-    bcrypt.compare(raw, encrypted, function (err, res) {
-        if(err){
-            console.log(err);
-            if(callback){
-                callback(err);
-            }
-        } else if(callback){
-            callback(res);
-        } else {
-            console.log(res);
-        }
-    });
+// exports.verifyPassword = function(raw, encrypted) {
+//   return new Promise((resolve, reject) => {
+//     bcrypt.compare(raw, encrypted, function(err, res) {
+//       if (err) {
+//         console.log(err);
+//         reject(err);
+//         // if(callback){
+//         //     callback(err);
+//         // }
+//       } else {
+//         resolve(res);
+//       }
+//     });
+//   });
+// };
+
+exports.verifyPassword = async function(raw, encrypted) {
+  bcrypt.compare(raw, encrypted, function(err, res) {
+    if (err) {
+      console.log(err);
+      throw err;
+    } else {
+      return res;
+    }
+  });
 };
 
 // middleware function to check for logged-in users
 exports.sessionChecker = (req, res, next) => {
-    if(!req.session.User){
-        res.redirect('/login');
-    } else if (!req.session.User.email || !req.session.User.id) {
-        res.redirect('/login');
-    } else {
-        next();
-    }
+  if (!req.session.User) {
+    res.redirect("/login");
+  } else if (!req.session.User.email || !req.session.User.id) {
+    res.redirect("/login");
+  } else {
+    next();
+  }
 };

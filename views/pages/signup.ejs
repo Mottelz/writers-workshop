@@ -5,9 +5,9 @@
 <main id="signup">
     <h1>Sasson Writer's Workshop</h1>
     <!--<h2>With <span class="strong">0,000</span> Reviews on <span class="strong">0,000</span> Stories &amp; Counting</h2>-->
-    <form>
-        <input id="text-left" type="text" name="firstname" placeholder="first name" />
-        <input id="text-right" type="text" name="lastname" placeholder="last name" />
+    <form id="signup-form" action="/signup" method="post">
+        <input id="text-left" type="text" name="fname" placeholder="first name" />
+        <input id="text-right" type="text" name="lname" placeholder="last name" />
         <input type="email" name="email" placeholder="e-mail address" />
         <input type="password" name="password" placeholder="password" />
         <input type="password" name="confirm" placeholder="confirm password" />
@@ -16,6 +16,7 @@
     <p>Already a Member of Sasson Writer's Workshop?</p>
     <p class="strong"><a class="link" href="/">Login Here</a></p>
     <a class="button" href="/">Login</a>
+    <script src="/src/validate.js"></script>
 </main>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <main id="login">
     <h1>Sasson Writer's Workshop</h1>
     <!--<h2>With <span class="strong">0,000</span> Reviews on <span class="strong">0,000</span> Stories &amp; Counting</h2>-->
-    <form>
+    <form id="login-form" method="post" action="/login">
         <input type="email" name="email" placeholder="e-mail address" />
         <input type="password" name="password" placeholder="password" />
         <input type="submit" value="Login" />
@@ -13,6 +13,7 @@
     <p>New to Sasson Writer's Workshop?</p>
     <p class="strong"><a class="link" href="signup">Sign Up Here</a></p>
     <a class="button" href="signup">Sign Up</a>
+    <script src="/src/validate.js"></script>
 </main>
 </body>
 </html>
