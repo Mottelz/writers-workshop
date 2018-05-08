@@ -2,11 +2,6 @@ const sqlite3 = require("sqlite3").verbose();
 const dblite = new sqlite3.Database("./content/test.sqlite");
 // const dblite = new sqlite3.Database(':memory:');
 
-const promisify = require('util').promisify;
-
-const dbliterun = promisify(dblite.run);
-const dbliteall = promisify(dblite.all);
-
 exports.initDB = function() {
   dblite.run(
     "CREATE TABLE writers ( id INTEGER PRIMARY KEY, bonus INTEGER, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;"
@@ -106,7 +101,7 @@ exports.getUser = function(uid, callback) {
 //Get the user's info by email
 exports.getUserByEmail = function(email, callback) {
   dblite.get(
-    "SELECT fname, lname, email, id, pword FROM writers WHERE email = ?",
+    "SELECT fname, lname, email, id, pword, bonus FROM writers WHERE email = ?",
     [email],
     function(err, row) {
       if (err) {
@@ -157,37 +152,32 @@ exports.getReviews = function(stoid, callback) {
   );
 };
 
-exports.getRawPointsData = function(uid, callback) {
+exports.getRawPointsData = function(uid, bonus, callback) {
   try {
-    dblite.get("SELECT bonus FROM writers WHERE id = ?1", { 1: uid }, function(
-      err,
-      bonus
-    ) {
+    dblite.get("SELECT bonus FROM writers WHERE id = ?1", { 1: uid }, function(err) {
       if (err) {
         throw err;
       } else {
         dblite.all(
-          "SELECT reviews.category AS revCat, COUNT(*) AS revNum FROM reviews WHERE reviews.author = ?1 GROUP BY reviews.category",
-          { 1: uid },
+          "SELECT reviews.category AS revCat, COUNT(*) AS revNum FROM reviews WHERE reviews.author = ?1 GROUP BY reviews.category", { 1: uid },
           function(err, revRows) {
             if (err) {
               throw err;
             } else {
               dblite.all(
-                "SELECT stories.category AS stoCat, COUNT(*) as stoNum FROM stories WHERE stories.author = ?1 GROUP BY stories.category",
-                { 1: uid },
+                "SELECT stories.category AS stoCat, COUNT(*) as stoNum FROM stories WHERE stories.author = ?1 GROUP BY stories.category", { 1: uid },
                 function(err, storRows) {
                   if (err) {
                     throw err;
                   } else {
                     if (revRows.length != 0 && storRows.length != 0) {
-                      callback({ reviews: revRows, stories: storRows });
+                      callback({ reviews: revRows, stories: storRows, bonus: bonus });
                     } else if (revRows.length == 0 && storRows.length == 0) {
-                      callback({ reviews: null, stories: null });
+                      callback({ reviews: null, stories: null, bonus: bonus });
                     } else if (revRows.length == 0 && storRows.length != 0) {
-                      callback({ reviews: null, stories: storRows });
+                      callback({ reviews: null, stories: storRows, bonus: bonus });
                     } else if (revRows.length != 0 && storRows.length == 0) {
-                      callback({ reviews: revRows, stories: null });
+                      callback({ reviews: revRows, stories: null, bonus: bonus });
                     }
                   }
                 }
@@ -203,15 +193,19 @@ exports.getRawPointsData = function(uid, callback) {
 };
 
 //Get the metadata for stories
-exports.getStories = async function(useid, callback) {
-  try {
-    return await dbliteall(
+exports.getStories = function(useid, callback) {
+    dblite.all(
     "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
-    [useid]);
-  } catch (err) {
-    console.log(err);
-    // throw err;
-  }
+    [useid], function(err, row) {
+        if (err) {
+          console.log(err.message);
+          if (callback) {
+            callback(err.message);
+          }
+        } else if (callback) {
+          callback(row);
+        }
+      });
 };
 
 //Get a review

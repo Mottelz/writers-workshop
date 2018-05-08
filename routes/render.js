@@ -6,12 +6,6 @@ const router = express.Router(); //load router
 const database = require("../routes/litedata.js");
 const algos = require("../routes/algos.js");
 
-const promisifiedGetRawPointsData = require("util").promisify(
-  database.getRawPointsData
-);
-const promisifiedCalculatePoints = require("util").promisify(
-  algos.calculatePoints
-);
 
 //Home & Signup
 router.get("/", (req, res) => res.render("login", { title: "Login" }));
@@ -30,28 +24,33 @@ router
   });
 
 router.post('/login', (req, res) => {
-  console.log(req.body);
   let email = req.body.email;
   let pword = req.body.password;
-  database.getUserByEmail(email, async row => {
-    const result = await algos.verifyPassword(pword, row.pword);
-    if (result) {
-      const points = await promisifiedCalculatePoints(
-        await promisifiedGetRawPointsData(row.id)
-      );
-      console.log('boobs');
-      req.session.User = {
-        email: row.email,
-        id: row.id,
-        points: 5,
-        fname: row.fname,
-        lname: row.lname
-      };
-      console.log(req.session.User);
-      res.redirect('/index');
-    }
+  database.getUserByEmail(email, function(row) {
+    algos.verifyPassword(pword, row.pword, (passVerified) => {
+      if (passVerified) {
+        database.getRawPointsData(row.id, row.bonus, (row2) => {
+          algos.calculatePoints(row2, (points) => {
+            req.session.User = {
+              email: row.email,
+              id: row.id,
+              points: points.points,
+              fname: row.fname,
+              lname: row.lname,
+            };
+            res.redirect('/index');
+          });
+        });
+      }
+    });
   });
 });
+
+router.get('/test', (req,res)=>{
+  const User = (req.session.User) ? req.session.User : { email: 'm@t.com', id: 1, points: 5, fname: 'Test', lname: 'Person' };
+  res.render('test', {User: User, title: 'Progress'})
+});
+
 
 router.get('/login', (req, res) => {
   res.redirect('/');
@@ -68,18 +67,12 @@ router.get("/logout", (req, res) => {
 });
 
 //Home page
-router.get("/index", /*algos.sessionChecker,*/ async (req, res) => {
-  //const stories = await database.getStories();
-  const stories = [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
-  const User = {
-    email: 'm@t.com',
-    id: 1,
-    points: 5,
-    fname: 'Mottel',
-    lname: 'Zirkind'
-  };
-  res.render('index', {User: User, stories, title: 'Reviewable'});
-  // res.render('index', {User: req.session.User, stories, title: 'Reviewable'})
+router.get("/index", algos.sessionChecker, async (req, res) => {
+  database.getStories(req.session.User.id, (rows)=>{
+    let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
+    res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable'})
+  });
+
 });
 
 //GET a user's info
