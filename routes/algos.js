@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 
 exports.calculatePoints = function(rows, callback) {
+  console.log('Points!');
   let points = 0;
   let storyMulti = {
     tinyfict: 1,
@@ -62,11 +63,13 @@ exports.encryptPassword = function(password, callback) {
 };
 
 exports.verifyPassword = async function(raw, encrypted) {
+  console.log('comparing');
   bcrypt.compare(raw, encrypted, function(err, res) {
     if (err) {
       console.log(err);
       throw err;
     } else {
+      console.log('passwords match: ',res);
       return res;
     }
   });

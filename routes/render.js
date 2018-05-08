@@ -29,25 +29,32 @@ router
     });
   });
 
-router.post("/login", (req, res) => {
+router.post('/login', (req, res) => {
+  console.log(req.body);
   let email = req.body.email;
-  let pword = req.body.pword;
+  let pword = req.body.password;
   database.getUserByEmail(email, async row => {
     const result = await algos.verifyPassword(pword, row.pword);
     if (result) {
       const points = await promisifiedCalculatePoints(
         await promisifiedGetRawPointsData(row.id)
       );
+      console.log('boobs');
       req.session.User = {
         email: row.email,
         id: row.id,
-        points,
+        points: 5,
         fname: row.fname,
         lname: row.lname
       };
+      console.log(req.session.User);
       res.redirect('/index');
     }
   });
+});
+
+router.get('/login', (req, res) => {
+  res.redirect('/');
 });
 
 //logout
@@ -61,9 +68,18 @@ router.get("/logout", (req, res) => {
 });
 
 //Home page
-router.get("/index", algos.sessionChecker, async (req, res) => {
-  const stories = await database.getStories();
-  res.render('index', {User: req.session.User, stories, title: 'Reviewable'})
+router.get("/index", /*algos.sessionChecker,*/ async (req, res) => {
+  //const stories = await database.getStories();
+  const stories = [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
+  const User = {
+    email: 'm@t.com',
+    id: 1,
+    points: 5,
+    fname: 'Mottel',
+    lname: 'Zirkind'
+  };
+  res.render('index', {User: User, stories, title: 'Reviewable'});
+  // res.render('index', {User: req.session.User, stories, title: 'Reviewable'})
 });
 
 //GET a user's info
