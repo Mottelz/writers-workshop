@@ -34,16 +34,16 @@ app.use(
   })
 );
 
-//set directions
-app.use("/", calls);
-
 //Confirm cookie is valid.
 app.use((req, res, next) => {
-  if (req.cookies.email && !req.session.user) {
+  if (req.cookies.email && !req.session.User) {
     res.clearCookie("email");
   }
   next();
 });
+
+//set directions
+app.use("/", calls);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

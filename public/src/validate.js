@@ -40,7 +40,7 @@ $(document).ready(function(){
       },
       confirm: {
         required: true,
-        equalTo: "password"
+        // equalTo: "password"
       }
     },
     messages: {
@@ -59,7 +59,7 @@ $(document).ready(function(){
       },
       confirm: {
         required: "Please fill this in.",
-        equalTo: "Make sure your passwords match."
+        // equalTo: "Make sure your passwords match."
       }
     }
   });

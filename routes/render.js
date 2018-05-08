@@ -15,55 +15,19 @@ const promisifiedCalculatePoints = require("util").promisify(
 
 //Home & Signup
 router.get("/", (req, res) => res.render("login", { title: "Login" }));
-router.get("/signup", (req, res) => res.render("signup", { title: "Sign Up" }));
-
-//login
-// router.post('/login', (req,res) => {
-//     let email = req.body.email;
-//     let pword = req.body.pword;
-//     database.getUserByEmail(email, (row)=>{
-//         algos.verifyPassword(pword, row.pword,
-//             (result) =>
-//             {
-//                 if(result){
-//                     database.getRawPointsData(userID, (rows) => {
-//                         promisifiedCalculatePoints(rows).then((points) => {
-//                             req.session.User = {email: row.email, id: row.id, points, fname: row.fname, lname: row.lname};
-//                             res.render('index')
-//                         })
-//                         // algos.calculatePoints(rows, (points) => {
-//                         //     req.session.User = {email: row.email, id: row.id, points, fname: row.fname, lname: row.lname};
-//                         //     res.render('index')
-//                         // })
-//                     });
-//
-//                 }
-//             })
-//     });
-// });
-
-// router.post("/login", (req, res) => {
-//   let email = req.body.email;
-//   let pword = req.body.pword;
-//   database.getUserByEmail(email, row => {
-//     algos.verifyPassword(pword, row.pword).then(result => {
-//       if (result) {
-//         promisifiedGetRawPointsData(userID)
-//           .then(promisifiedCalculatePoints)
-//           .then(points => {
-//             req.session.User = {
-//               email: row.email,
-//               id: row.id,
-//               points,
-//               fname: row.fname,
-//               lname: row.lname
-//             };
-//             res.render("index");
-//           });
-//       }
-//     });
-//   });
-// });
+router
+  .get("/signup", (req, res) => res.render("signup", { title: "Sign Up" }))
+  .post("/signup", (req, res) => {
+    let fname = req.body.fname;
+    let lname = req.body.lname;
+    let email = req.body.email;
+    let pword = req.body.password;
+    algos.encryptPassword(pword, encrypted => {
+      database.addUser(fname, lname, email, encrypted, result => {
+        res.redirect('/');
+      });
+    });
+  });
 
 router.post("/login", (req, res) => {
   let email = req.body.email;
@@ -88,9 +52,8 @@ router.post("/login", (req, res) => {
 
 //logout
 router.get("/logout", (req, res) => {
-  if (req.session.User && req.cookies.email) {
-    res.clearCookie("email");
-    res.clearCookie("id");
+  if (req.session.User) {
+    res.clearCookie("User");
     res.redirect("/");
   } else {
     res.redirect("/");
@@ -191,19 +154,6 @@ router.post("/story", algos.sessionChecker, (req, res) => {
   let content = req.body.content;
   database.addStory(title, category, author, content, result => {
     res.send(result);
-  });
-});
-
-//POST a new user
-router.post("/user", (req, res) => {
-  let fname = req.body.fname;
-  let lname = req.body.lname;
-  let email = req.body.email;
-  let pword = req.body.pword;
-  algos.encryptPassword(pword, encrypted => {
-    database.addUser(fname, lname, email, encrypted, result => {
-      res.send(result);
-    });
   });
 });
 

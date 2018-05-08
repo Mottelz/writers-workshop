@@ -47,7 +47,7 @@ exports.calculatePoints = function(rows, callback) {
 };
 
 exports.encryptPassword = function(password, callback) {
-  bcrypt.hash(password, 10, function(err, hash) {
+  bcrypt.hash(password, 5, function(err, hash) {
     if (err) {
       console.log(err);
       if (callback) {
@@ -60,22 +60,6 @@ exports.encryptPassword = function(password, callback) {
     }
   });
 };
-
-// exports.verifyPassword = function(raw, encrypted) {
-//   return new Promise((resolve, reject) => {
-//     bcrypt.compare(raw, encrypted, function(err, res) {
-//       if (err) {
-//         console.log(err);
-//         reject(err);
-//         // if(callback){
-//         //     callback(err);
-//         // }
-//       } else {
-//         resolve(res);
-//       }
-//     });
-//   });
-// };
 
 exports.verifyPassword = async function(raw, encrypted) {
   bcrypt.compare(raw, encrypted, function(err, res) {
