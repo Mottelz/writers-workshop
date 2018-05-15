@@ -8,7 +8,16 @@ const algos = require("../routes/algos.js");
 
 
 //Home & Signup
-router.get("/", (req, res) => res.render("login", { title: "Login" }));
+router.get("/", (req, res) => {
+  if(req.session.User == null) {
+    res.render("login", { title: "Login" });
+  } else {
+    res.redirect('/index');
+  }
+
+});
+
+
 router
   .get("/signup", (req, res) => res.render("signup", { title: "Sign Up" }))
   .post("/signup", (req, res) => {
@@ -23,6 +32,8 @@ router
     });
   });
 
+
+//login
 router.post('/login', (req, res) => {
   let email = req.body.email;
   let pword = req.body.password;
@@ -58,12 +69,12 @@ router.get('/login', (req, res) => {
 
 //logout
 router.get("/logout", (req, res) => {
-  if (req.session.User) {
-    res.clearCookie("User");
+  req.session.destroy((err) => {
+    if(err) {
+      console.log(err);
+    }
     res.redirect("/");
-  } else {
-    res.redirect("/");
-  }
+  });
 });
 
 //Home page
