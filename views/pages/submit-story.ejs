@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<% include ../partials/head.ejs %>
+<body>
+<header>
+    <h1>Sasson Writer's Workshop</h1>
+</header>
+<% include ../partials/nav.ejs %>
+<main>
+    <section class="section-header">
+        <h2>Submit Story</h2>
+    </section>
+    <section class="section-form">
+        <form class="submit-story" id="story-form" method="post" action="/submit-story">
+            <select name="category">
+                <option value="">Select a Category</option>
+                <option value="tinyfict">Flash Fiction 0&mdash;1200 Words</option>
+                <option value="shorfict">Short Story 1201&mdash;3200 Words</option>
+                <option value="longfict">Long Fiction 3201&mdash;6200 Words</option>
+                <option value="shornfic">Short Non Fiction 0&mdash;2000 Words</option>
+                <option value="longnfic">Long Non Fiction 2001&mdash;6000 Words</option>
+                <option value="shorpoem">Poetry 0&mdash;1500 Words</option>
+                <option value="epicpoem">Epic Poetry 1501&mdash;5000 Words</option>
+            </select>
+            <input type="text" name="title" placeholder="Story Title" />
+            <textarea name="story" placeholder="Write Story"></textarea>
+            <button type="submit" class="submit-button">Submit Story</button>
+        </form>
+    </section>
+    <script src="/src/validate.js"></script>
+</main>
+<% include ../partials/footer.ejs%>
+</body>
+</html>

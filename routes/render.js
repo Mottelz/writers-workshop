@@ -8,13 +8,26 @@ const algos = require("../routes/algos.js");
 
 
 //Home & Signup
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   if(req.session.User == null) {
     res.render("login", { title: "Login" });
   } else {
-    res.redirect('/index');
+    //If logged in, update the info
+    database.getUserByEmail(req.session.User.email, function(row) {
+      database.getRawPointsData(row.id, row.bonus, (row2) => {
+        algos.calculatePoints(row2, (points) => {
+          req.session.User = {
+            email: row.email,
+            id: row.id,
+            points: points.points,
+            fname: row.fname,
+            lname: row.lname,
+          };
+          res.redirect('/index');
+        });
+      });
+    });
   }
-
 });
 
 
@@ -85,6 +98,24 @@ router.get("/index", algos.sessionChecker, async (req, res) => {
   });
 
 });
+
+//Get story submission form
+router.get("/submit-story", algos.sessionChecker, async (req, res) => {
+  res.render('submit-story', {User: req.session.User, title: 'Submit Story'})
+});
+
+
+//Post new story
+router.post("/submit-story", algos.sessionChecker, (req, res) => {
+  let cat = req.body.category;
+  let story = req.body.story;
+  let title = req.body.title;
+  database.addStory(title, cat, req.session.User.id, story, () => {
+    res.redirect('/');
+  });
+});
+
+
 
 //GET a user's info
 router.get("/user/:uid", (req, res) => {
