@@ -27,7 +27,8 @@
         <div class="story-excerpt">
             <h3><%= stories[i].title %></h3>
             <h4><span class="strong"><a href="" class="category-link"><%= stories[i].category%></a></span></h4>
-            <p class="body-excerpt"><%= stories[i].content + '...'%></p>
+            <p class="body-excerpt"><%= stories[i].blurb + '...'%></p>
+            <% console.log(stories[i])%>
         </div>
         <div class="story-additional">
             <h4><%=stories[i].created%></h4>

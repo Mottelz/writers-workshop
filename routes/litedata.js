@@ -195,7 +195,7 @@ exports.getRawPointsData = function(uid, bonus, callback) {
 //Get the metadata for stories
 exports.getStories = function(useid, callback) {
     dblite.all(
-    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
+    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
     [useid], function(err, row) {
         if (err) {
           console.log(err.message);
