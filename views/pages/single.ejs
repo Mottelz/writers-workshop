@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<% include ../partials/head.ejs %>
+<body>
+<header>
+    <h1>Sasson Writer's Workshop</h1>
+</header>
+<% include ../partials/nav.ejs %>
+<main>
+<!--TODO: Make this work for new-->
+    <section class="section-header">
+        <h2><a href="/" class="back">Back to Reviewable Stories</a></h2>
+    </section>
+    <section class="section-block" style="width: 100%;">
+        <h3><%= story.title %></h3>
+        <h4><span class="strong"><a href="" class="category-link"> <%= story.category %></a></span> &mdash; Added <%= moment(story.created).format("MMM Do, YYYY") %></h4>
+        <p><%- story.content.replace(new RegExp('\n', 'g'), '<br>')%></p>
+    </section>
+    <section class="section-subheader">
+        <h3>Leave a Review</h3>
+    </section>
+    <section class="section-form">
+        <form class="leave-review" id="review-post" method="post" action="/review">
+            <input type="hidden" name="category" value="<%= story.category %>">
+            <input type="hidden" name="story" value="<%= story.id %>">
+            <textarea name="content" placeholder="Remember to use compliment sandwiches..."></textarea>
+            <button type="submit" class="submit-button">Submit Review</button>
+        </form>
+        <script src="/src/validate.js"></script>
+    </section>
+</main>
+<% include ../partials/footer.ejs%>
+</body>
+</html>
