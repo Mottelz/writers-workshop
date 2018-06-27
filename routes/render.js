@@ -5,7 +5,7 @@ const router = express.Router(); //load router
 //customs
 const database = require("../routes/litedata.js");
 const algos = require("../routes/algos.js");
-
+moment = require('moment');
 
 //Home & Signup
 router.get("/", async (req, res) => {
@@ -94,7 +94,7 @@ router.get("/logout", (req, res) => {
 router.get("/index", algos.sessionChecker, async (req, res) => {
   database.getStories(req.session.User.id, (rows)=>{
     let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
-    res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable'})
+    res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment})
   });
 
 });
@@ -114,6 +114,14 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
     res.redirect('/');
   });
 });
+
+//Get single story
+router.get("/story/:sid", algos.sessionChecker, (req, res) =>{
+  console.log("ID: " + req.params.sid);
+  res.redirect('/');
+});
+
+
 
 
 

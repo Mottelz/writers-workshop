@@ -9,18 +9,18 @@
 <main>
     <section class="section-header">
         <h2>Reviewable Stories</h2>
-        <form class="category">
-            <select>
-                <option value="">Select a Category</option>
-                <option value="flash-fiction">Flash Fiction 0&mdash;1200 Words</option>
-                <option value="short-story">Short Story 1201&mdash;3200 Words</option>
-                <option value="long-fiction">Long Fiction 3201&mdash;6200 Words</option>
-                <option value="short-non-fiction">Short Non Fiction 0&mdash;2000 Words</option>
-                <option value="long-non-fiction">Long Non Fiction 2001&mdash;6000 Words</option>
-                <option value="poetry">Poetry 0&mdash;1500 Words</option>
-                <option value="epic-poetry">Epic Poetry 1501&mdash;5000 Words</option>
-            </select>
-        </form>
+        <!--<form class="category">-->
+            <!--<select>-->
+                <!--<option value="">Select a Category</option>-->
+                <!--<option value="flash-fiction">Flash Fiction 0&mdash;1200 Words</option>-->
+                <!--<option value="short-story">Short Story 1201&mdash;3200 Words</option>-->
+                <!--<option value="long-fiction">Long Fiction 3201&mdash;6200 Words</option>-->
+                <!--<option value="short-non-fiction">Short Non Fiction 0&mdash;2000 Words</option>-->
+                <!--<option value="long-non-fiction">Long Non Fiction 2001&mdash;6000 Words</option>-->
+                <!--<option value="poetry">Poetry 0&mdash;1500 Words</option>-->
+                <!--<option value="epic-poetry">Epic Poetry 1501&mdash;5000 Words</option>-->
+            <!--</select>-->
+        <!--</form>-->
     </section>
     <% for(i=0; i<stories.length; i++) {%>
     <section class="section-block" style="width: 100%;">
@@ -28,12 +28,11 @@
             <h3><%= stories[i].title %></h3>
             <h4><span class="strong"><a href="" class="category-link"><%= stories[i].category%></a></span></h4>
             <p class="body-excerpt"><%= stories[i].blurb + '...'%></p>
-            <% console.log(stories[i])%>
         </div>
         <div class="story-additional">
-            <h4><%=stories[i].created%></h4>
+            <h4>Posted <%= moment(stories[i].created).format("MMM Do, YYYY") %></h4>
             <!--<h4>Review Count <span class="strong">0</span></h4>-->
-            <button class="button">Read &amp; Review</button>
+            <button class="button" onclick="location.href='/story/<%= stories[i].id %>'">Read &amp; Review</button>
         </div>
     </section>
     <%}%>

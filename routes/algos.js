@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 
 exports.calculatePoints = function(rows, callback) {
-  console.log(rows);
   let points = 0;
   let storyMulti = {
     tinyfict: 1,
