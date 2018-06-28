@@ -86,13 +86,21 @@ router.get("/logout", (req, res) => {
   });
 });
 
-//Home page
+//Home page (aka Reviewable)
 router.get("/index", algos.sessionChecker, async (req, res) => {
-  database.getStories(req.session.User.id, (rows)=>{
+  database.getReviewableStories(req.session.User.id, (rows)=>{
     let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
     res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment})
   });
+});
 
+
+//User's stories
+router.get("/my-stories", algos.sessionChecker, async (req, res) => {
+  database.getUsersStories(req.session.User.id, (rows)=>{
+    let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
+    res.render('my-stories', {User: req.session.User, stories: stories, title: 'My Stories', moment: moment})
+  });
 });
 
 //Get story submission form
@@ -114,7 +122,13 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
 //Get single story
 router.get("/story/:sid", algos.sessionChecker, (req, res) =>{
   database.getStory(req.params.sid, (story) => {
-    res.render('single', {title: "Story", story: story, moment: moment, User: req.session.User})
+    if (story.author == req.session.User.id) {
+      database.getReviews(story.id, (reviews) => {
+        res.render('my-single', {title: "Story", story: story, reviews: reviews, moment: moment, User: req.session.User})
+      });
+    } else {
+      res.render('single', {title: "Story", story: story, moment: moment, User: req.session.User})
+    }
   })
 });
 

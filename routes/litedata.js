@@ -119,7 +119,7 @@ exports.getUserByEmail = function(email, callback) {
 //Get a story
 exports.getStory = function(storyid, callback) {
   dblite.get(
-    "SELECT title, content, category, stories.id, writers.fname, writers.lname FROM stories INNER JOIN writers ON author = writers.id WHERE stories.id = ?",
+    "SELECT title, content, category, stories.id, writers.fname, writers.lname, author FROM stories INNER JOIN writers ON author = writers.id WHERE stories.id = ?",
     [storyid],
     function(err, row) {
       if (err) {
@@ -134,10 +134,10 @@ exports.getStory = function(storyid, callback) {
   );
 };
 
-//Get the metadata for reviews by story
+//Get reviews by story
 exports.getReviews = function(stoid, callback) {
   dblite.all(
-    "SELECT reviews.id, reviews.created, reviews.author, reviews.story, reviews.category FROM reviews WHERE reviews.story = ?",
+    "SELECT reviews.id, reviews.created, reviews.author, reviews.story, reviews.content, reviews.category, writers.fname, writers.lname FROM reviews INNER JOIN writers ON author = reviews.id WHERE reviews.story = ?",
     [stoid],
     function(err, rows) {
       if (err) {
@@ -193,10 +193,9 @@ exports.getRawPointsData = function(uid, bonus, callback) {
 };
 
 //Get the metadata for stories
-exports.getStories = function(useid, callback) {
+exports.getAllStories = function(callback) {
     dblite.all(
-    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
-    [useid], function(err, row) {
+    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id", function(err, row) {
         if (err) {
           console.log(err.message);
           if (callback) {
@@ -206,6 +205,40 @@ exports.getStories = function(useid, callback) {
           callback(row);
         }
       });
+};
+
+
+//Get the metadata for stories
+exports.getReviewableStories = function(useid, callback) {
+  dblite.all(
+    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author != ?",
+    [useid], function(err, row) {
+      if (err) {
+        console.log(err.message);
+        if (callback) {
+          callback(err.message);
+        }
+      } else if (callback) {
+        callback(row);
+      }
+    });
+};
+
+
+//Get the metadata for stories
+exports.getUsersStories = function(useid, callback) {
+  dblite.all(
+    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
+    [useid], function(err, row) {
+      if (err) {
+        console.log(err.message);
+        if (callback) {
+          callback(err.message);
+        }
+      } else if (callback) {
+        callback(row);
+      }
+    });
 };
 
 //Get a review
