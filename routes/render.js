@@ -66,7 +66,9 @@ router
             res.redirect('/index');
           });
         });
-      }
+      } else {
+        res.redirect('/');
+      };
     });
   });
 })
@@ -114,6 +116,7 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
   let cat = req.body.category;
   let story = req.body.story;
   let title = req.body.title;
+
   database.addStory(title, cat, req.session.User.id, story, () => {
     res.redirect('/');
   });
@@ -138,9 +141,23 @@ router.post('/review', algos.sessionChecker, (req, res) => {
   let story = req.body.story;
   let category = req.body.category;
   let content = req.body.content;
-  database.addReview(author, story, category, content, (result) => {
-    res.redirect('/');
-  });
+  //ensure that this person hasn't reviewed this story.
+  database.getReviews(story, (reviews) => {
+    let hasReviewed = false;
+    reviews.forEach((review) => {
+        if (review.author == author)  {
+        hasReviewed = true;
+      }
+    });
+    //If they haven't reviewed it...
+    if (!hasReviewed) {
+      database.addReview(author, story, category, content, (result) => {
+        res.redirect('/');
+      })
+    } else {
+      res.redirect('/');
+    }
+  })
 });
 
 //export router
