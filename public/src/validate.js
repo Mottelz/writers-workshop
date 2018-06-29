@@ -15,11 +15,11 @@ $(document).ready(function(){
       },
       messages: {
         email: {
-          required: "Please fill in.",
-          email: "Must be an email address."
+          required: "<div class='notice'>Please fill in.</div>",
+          email: "<div class='error'>Must be an email address.</div>"
         },
         password: {
-          required: "Don't forget your password."
+          required: "<div class='error'>Don't forget your password.</div>"
         }
       }
     });
@@ -47,20 +47,20 @@ $(document).ready(function(){
       },
       messages: {
         fname: {
-          required: "Please fill this in."
+          required: "<div class='error'>Please fill this in.</div>"
         },
         lname: {
-          required: "Please fill this in."
+          required: "<div class='error'>Please fill this in.</div>"
         },
         email: {
-          required: "Please fill this in.",
-          email: "This needs to be an email."
+          required: "<div class='error'>Please fill this in.</div>",
+          email: "<div class='error'>This needs to be an email.</div>"
         },
         password: {
-          required: "Please fill this in."
+          required: "<div class='error'>Please fill this in.</div>"
         },
         confirm: {
-          required: "Please fill this in.",
+          required: "<div class='error'>Please fill this in.</div>",
           // equalTo: "Make sure your passwords match."
         }
       }
@@ -83,13 +83,13 @@ $(document).ready(function(){
       },
       messages: {
         title: {
-          required: "Please fill this in."
+          required: "<div class='error'>Please fill this in.</div>"
         },
         category: {
-          required: "Please fill this in."
+          required: "<div class='error'>Please fill this in.</div>"
         },
         story: {
-          required: "Please fill this in.",
+          required: "<div class='error'>Please fill this in.</div>",
 
         }
       }
@@ -106,8 +106,8 @@ $(document).ready(function(){
     },
     messages: {
       content: {
-        required: "Please fill this in.",
-        wordsrange: "Please give a little more feedback to help your fellow writers."
+        required: "<div class='error'>Please fill this in.</div>",
+        wordsrange: "<div class='error'>Please give a little more feedback to help your fellow writers.</div>"
       }
     }
   });
@@ -164,10 +164,8 @@ $.validator.addMethod("setrange", function(value, element) {
   }
 
   else {
-    word_limit = [100, 10000]
+    word_limit = [100, 100000]
   }
 
   return true
-}, "Category couldn't set range");
-
-// Infinity
+}, "<div class='error'>Category couldn't set range</div>");

@@ -643,3 +643,17 @@ footer {
 	}
 
 }
+
+.error {
+	color: #E65652;
+	font-weight: 500;
+	font-size: 1em;
+	font-family: 'Roboto', sans-serif;
+}
+
+.notice {
+	color: #32f92d;
+	font-weight: 500;
+	font-size: 1em;
+	font-family: 'Roboto', sans-serif;
+}
