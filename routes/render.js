@@ -5,7 +5,8 @@ const router = express.Router(); //load router
 //customs
 const database = require("../routes/litedata.js");
 const algos = require("../routes/algos.js");
-moment = require('moment');
+const moment = require('moment');
+pointvals = require('../content/pointvals.js');
 
 //Home & Signup
 router.get("/", async (req, res) => {
@@ -116,10 +117,13 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
   let cat = req.body.category;
   let story = req.body.story;
   let title = req.body.title;
-
-  database.addStory(title, cat, req.session.User.id, story, () => {
+  if (pointvals.storyMulti[cat] > req.session.User.points) {
     res.redirect('/');
-  });
+  } else {
+    database.addStory(title, cat, req.session.User.id, story, () => {
+      res.redirect('/');
+    });
+  }
 });
 
 //Get single story
