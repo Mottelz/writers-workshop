@@ -164,5 +164,9 @@ router.post('/review', algos.sessionChecker, (req, res) => {
   })
 });
 
+router.get('/error', (req, res) => {
+  res.render('error', {title: 'Error', message:'Something went wrong.'});
+});
+
 //export router
 module.exports = router;
