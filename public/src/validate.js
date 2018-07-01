@@ -15,7 +15,7 @@ $(document).ready(function(){
       },
       messages: {
         email: {
-          required: "<div class='notice'>Please fill in.</div>",
+          required: "<div class='error'>Please fill in.</div>",
           email: "<div class='error'>Must be an email address.</div>"
         },
         password: {

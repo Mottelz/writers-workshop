@@ -1,6 +1,6 @@
 <nav>
     <div class="user-info">
-        <h4>Welcome <span class="strong"><a href="/my-stories" class="header-link"><%= User.fname %> <%= User.lname %></a></span>, you currently have <span class="strong"><%= User.points %></span> points.</h4>
+        <h4>Welcome <span class="strong"><a href="/my-stories" class="header-link"><%= User.fname %> <%= User.lname %></a></span>, you currently have <span class="strong"><%= User.points %></span> points. <% if (typeof notice != 'undefined') {%> <span class="notice"><%= notice %></span><%} %> <% if (typeof errorMessage != 'undefined') {%> <span class="error"><%= errorMessage %></span><%} %></h4>
     </div>
     <div class="stick">
         <div class="mobile-menu">

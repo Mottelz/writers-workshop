@@ -4,6 +4,7 @@
 <body>
 <main id="login">
     <h1>Sasson Writer's Workshop</h1>
+    <% if (typeof notice != 'undefined') {%> <h2 class="notice"><%= notice %>></h2><%} %> <% if (typeof errorMessage != 'undefined') {%> <h2 class="error"><%= errorMessage %></h2><%} %>
     <!--<h2>With <span class="strong">0,000</span> Reviews on <span class="strong">0,000</span> Stories &amp; Counting</h2>-->
     <form id="login-form" method="post" action="/login">
         <input type="email" name="email" placeholder="e-mail address" />

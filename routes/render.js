@@ -11,7 +11,11 @@ pointvals = require('../content/pointvals.js');
 //Home & Signup
 router.get("/", async (req, res) => {
   if(req.session.User == null) {
-    res.render("login", { title: "Login" });
+    if (req.session.errorMessage  === undefined || req.session.errorMessage  === null) {
+      res.render("login", { title: "Login"});
+    } else {
+      res.render("login", { title: "Login", errorMessage: req.session.errorMessage });
+    }
   } else {
     //If logged in, update the info
     database.getUserByEmail(req.session.User.email, function(row) {
@@ -68,6 +72,7 @@ router
           });
         });
       } else {
+        req.session.errorMessage = "Login Failed. Invalid Password.";
         res.redirect('/');
       };
     });
@@ -93,7 +98,13 @@ router.get("/logout", (req, res) => {
 router.get("/index", algos.sessionChecker, async (req, res) => {
   database.getReviewableStories(req.session.User.id, (rows)=>{
     let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
-    res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment})
+    if (req.session.errorMessage  !== undefined && req.session.errorMessage  !== null) {
+      res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment, errorMessage: req.session.errorMessage})
+    } else if(req.session.notice  !== undefined && req.session.notice  !== null) {
+      res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment, notice: req.session.notice})
+    } else {
+      res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment})
+    }
   });
 });
 
@@ -129,7 +140,7 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
 //Get single story
 router.get("/story/:sid", algos.sessionChecker, (req, res) =>{
   database.getStory(req.params.sid, (story) => {
-    if (story.author == req.session.User.id) {
+    if (story.author === req.session.User.id) {
       database.getReviews(story.id, (reviews) => {
         res.render('my-single', {title: "Story", story: story, reviews: reviews, moment: moment, User: req.session.User})
       });
@@ -140,7 +151,7 @@ router.get("/story/:sid", algos.sessionChecker, (req, res) =>{
 });
 
 //Post a review
-router.post('/review', algos.sessionChecker, (req, res) => {
+router.post('/review', algos.sessionChecker, async (req, res) => {
   let author = req.session.User.id;
   let story = req.body.story;
   let category = req.body.category;
@@ -148,18 +159,20 @@ router.post('/review', algos.sessionChecker, (req, res) => {
   //ensure that this person hasn't reviewed this story.
   database.getReviews(story, (reviews) => {
     let hasReviewed = false;
-    reviews.forEach((review) => {
-        if (review.author == author)  {
+    for (let i = 0; i < reviews.length; i++) {
+      if (reviews[i].author === author)  {
         hasReviewed = true;
       }
-    });
+    }
+
     //If they haven't reviewed it...
     if (!hasReviewed) {
       database.addReview(author, story, category, content, (result) => {
         res.redirect('/');
       })
     } else {
-      res.redirect('/');
+      req.session.errorMessage = "You've already reviewed this story!";
+      res.redirect('/index');
     }
   })
 });

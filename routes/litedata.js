@@ -137,7 +137,7 @@ exports.getStory = function(storyid, callback) {
 //Get reviews by story
 exports.getReviews = function(stoid, callback) {
   dblite.all(
-    "SELECT reviews.id, reviews.created, reviews.author, reviews.story, reviews.content, reviews.category, writers.fname, writers.lname FROM reviews INNER JOIN writers ON author = reviews.id WHERE reviews.story = ?",
+    "SELECT reviews.id, reviews.created, reviews.author, reviews.story, reviews.content, reviews.category, writers.fname, writers.lname FROM reviews LEFT OUTER JOIN writers on reviews.author = writers.id WHERE reviews.story = ?",
     [stoid],
     function(err, rows) {
       if (err) {
