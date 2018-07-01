@@ -74,13 +74,13 @@ router
       } else {
         req.session.errorMessage = "Login Failed. Invalid Password.";
         res.redirect('/');
-      };
+      }
     });
   });
 })
   .get('/login', (req, res) => {
     res.redirect('/');
-  });;
+  });
 
 
 
@@ -129,9 +129,11 @@ router.post("/submit-story", algos.sessionChecker, (req, res) => {
   let story = req.body.story;
   let title = req.body.title;
   if (pointvals.storyMulti[cat] > req.session.User.points) {
+    req.session.errorMessage = "You don't have enough points. Please review more stories before trying to post your own.";
     res.redirect('/');
   } else {
     database.addStory(title, cat, req.session.User.id, story, () => {
+      req.session.notice = "Your story has been added.";
       res.redirect('/');
     });
   }
@@ -168,6 +170,7 @@ router.post('/review', algos.sessionChecker, async (req, res) => {
     //If they haven't reviewed it...
     if (!hasReviewed) {
       database.addReview(author, story, category, content, (result) => {
+        req.session.notice = "Your review has been added.";
         res.redirect('/');
       })
     } else {
