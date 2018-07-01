@@ -211,7 +211,7 @@ exports.getAllStories = function(callback) {
 //Get the metadata for stories
 exports.getReviewableStories = function(useid, callback) {
   dblite.all(
-    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author != ?",
+    "SELECT stories.title, COUNT(DISTINCT reviews.id) as revCount, stories.id, stories.author, stories.category, stories.created, w.fname, w.lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers w ON stories.author = w.id LEFT OUTER JOIN reviews ON stories.id = reviews.story WHERE stories.author != ? GROUP BY stories.id ORDER BY stories.created DESC;",
     [useid], function(err, row) {
       if (err) {
         console.log(err.message);
@@ -228,7 +228,7 @@ exports.getReviewableStories = function(useid, callback) {
 //Get the metadata for stories
 exports.getUsersStories = function(useid, callback) {
   dblite.all(
-    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author = ?",
+    "SELECT title, stories.id, author, category, stories.created, fname, lname, substr(stories.content, 1, 450) as blurb FROM stories INNER JOIN writers ON author = writers.id WHERE author = ? ORDER BY stories.created DESC",
     [useid], function(err, row) {
       if (err) {
         console.log(err.message);

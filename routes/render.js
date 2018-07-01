@@ -97,7 +97,13 @@ router.get("/logout", (req, res) => {
 //Home page (aka Reviewable)
 router.get("/index", algos.sessionChecker, async (req, res) => {
   database.getReviewableStories(req.session.User.id, (rows)=>{
-    let stories = (rows) ? rows : [{title:'Title', content:'This is the content.',category:'Short Fiction'}];
+    let stories = [];
+    rows.forEach((row) => {
+      if (row.revCount < 5) {
+        stories.push(row);
+      }
+    });
+
     if (req.session.errorMessage  !== undefined && req.session.errorMessage  !== null) {
       res.render('index', {User: req.session.User, stories: stories, title: 'Reviewable', moment: moment, errorMessage: req.session.errorMessage})
     } else if(req.session.notice  !== undefined && req.session.notice  !== null) {
