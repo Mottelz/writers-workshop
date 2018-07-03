@@ -23,7 +23,7 @@ exports.calculatePoints = function(rows, callback) {
     points = 0;
   }
 
-  if (rows.stories.length == 0){
+  if (rows.stories == null){
     points += rows.bonus;
   }
   //callback with result

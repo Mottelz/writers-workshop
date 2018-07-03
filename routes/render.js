@@ -35,6 +35,12 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/init1991", (req, res) => {
+  database.initDB();
+  res.redirect('/');
+});
+
+
 //Signup
 router
   .get("/signup", (req, res) => res.render("signup", { title: "Sign Up" }))
@@ -57,25 +63,30 @@ router
   let email = req.body.email;
   let pword = req.body.password;
   database.getUserByEmail(email, function(row) {
-    algos.verifyPassword(pword, row.pword, (passVerified) => {
-      if (passVerified) {
-        database.getRawPointsData(row.id, row.bonus, (row2) => {
-          algos.calculatePoints(row2, (points) => {
-            req.session.User = {
-              email: row.email,
-              id: row.id,
-              points: points.points,
-              fname: row.fname,
-              lname: row.lname,
-            };
-            res.redirect('/index');
+    if (row == undefined) {
+      req.session.errorMessage = "Login Failed. Invalid Email.";
+      res.redirect('/');
+    } else {
+      algos.verifyPassword(pword, row.pword, (passVerified) => {
+        if (passVerified) {
+          database.getRawPointsData(row.id, row.bonus, (row2) => {
+            algos.calculatePoints(row2, (points) => {
+              req.session.User = {
+                email: row.email,
+                id: row.id,
+                points: points.points,
+                fname: row.fname,
+                lname: row.lname,
+              };
+              res.redirect('/index');
+            });
           });
-        });
-      } else {
-        req.session.errorMessage = "Login Failed. Invalid Password.";
-        res.redirect('/');
-      }
-    });
+        } else {
+          req.session.errorMessage = "Login Failed. Invalid Password.";
+          res.redirect('/');
+        }
+      });
+    }
   });
 })
   .get('/login', (req, res) => {

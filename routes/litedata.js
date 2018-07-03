@@ -1,18 +1,25 @@
 const sqlite3 = require("sqlite3").verbose();
 const dblite = new sqlite3.Database("./content/test.sqlite");
+// const dblite = new sqlite3.Database("./content/real.db");
 // const dblite = new sqlite3.Database(':memory:');
 
 exports.initDB = function() {
+  //Create writers table
   dblite.run(
-    "CREATE TABLE writers ( id INTEGER PRIMARY KEY, bonus INTEGER, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL); CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); PRAGMA foreign_keys = ON;"
-  );
+    "CREATE TABLE writers ( id INTEGER PRIMARY KEY, bonus INTEGER, created TEXT, email TEXT UNIQUE, fname TEXT NOT NULL, lname TEXT NOT NULL, pword TEXT NOT NULL);");
+  //Create stories table
+  dblite.run("CREATE TABLE stories ( id INTEGER PRIMARY KEY, created TEXT, title TEXT NOT NULL, category TEXT NOT NULL, author INTEGER NOT NULL, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id) ); ");
+  //Create reviews table
+  dblite.run("CREATE TABLE reviews ( id INTEGER PRIMARY KEY, created TEXT, rating INT, author INTEGER NOT NULL, story INTEGER NOT NULL, category TEXT, content TEXT NOT NULL, FOREIGN KEY (author) REFERENCES writers(id), FOREIGN KEY (story) REFERENCES stories(id)); ");
+  //Activate foreign keys
+  dblite.run("PRAGMA foreign_keys = ON;");
 };
 
 //Add user
 exports.addUser = function(fname, lname, email, pword, callback) {
   dblite.run(
-    "INSERT INTO writers (fname, lname, email, pword, created) VALUES (?1, ?2, ?3, ?4, datetime('now'))",
-    { 1: fname, 2: lname, 3: email, 4: pword },
+    "INSERT INTO writers (fname, lname, email, pword, created, bonus) VALUES (?1, ?2, ?3, ?4, datetime('now'), ?5)",
+    { 1: fname, 2: lname, 3: email, 4: pword, 5: bonus},
     function(err) {
       if (err) {
         console.log(err.message);
