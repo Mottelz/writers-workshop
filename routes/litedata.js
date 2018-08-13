@@ -90,7 +90,7 @@ exports.rateReview = function(revid, rating, callback) {
 //Get the user's info by id
 exports.getUser = function(uid, callback) {
   dblite.get(
-    "SELECT fname, lname, email, id  FROM writers WHERE writers.id = ?",
+    "SELECT fname, lname, email, id, pword, bonus  FROM writers WHERE writers.id = ?",
     [uid],
     function(err, row) {
       if (err) {
