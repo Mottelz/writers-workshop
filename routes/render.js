@@ -201,5 +201,39 @@ router.get('/error', (req, res) => {
   res.render('error', {title: 'Error', message:'Something went wrong.'});
 });
 
+router.get('/clearAll', algos.sessionChecker, (req, res) => {
+  if (req.session.User.email == 'mottelzirkind@gmail.com') {
+    database.clearStories();
+    database.clearRevs();
+    req.session.notice = "You've deleted all the reviews and stories.";
+    res.redirect('/index');
+  } else {
+    req.session.errorMessage = "I'm sorry Dave, you can't do that.";
+    res.redirect('/index');
+  }
+});
+
+router.get('/clearRevs', algos.sessionChecker, (req, res) => {
+  if (req.session.User.email == 'mottelzirkind@gmail.com') {
+    database.clearRevs();
+    req.session.notice = "You've deleted all the reviews.";
+    res.redirect('/index');
+  } else {
+    req.session.errorMessage = "I'm sorry Dave, you can't do that.";
+    res.redirect('/index');
+  }
+});
+
+router.get('/clearStories', algos.sessionChecker, (req, res) => {
+  if (req.session.User.email == 'mottelzirkind@gmail.com') {
+    database.clearStories();
+    req.session.notice = "You've deleted all the stories.";
+    res.redirect('/index');
+  } else {
+    req.session.errorMessage = "I'm sorry Dave, you can't do that.";
+    res.redirect('/index');
+  }
+});
+
 //export router
 module.exports = router;

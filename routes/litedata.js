@@ -15,6 +15,15 @@ exports.initDB = function() {
   dblite.run("PRAGMA foreign_keys = ON;");
 };
 
+exports.clearStories = function() {
+  dblite.run("DELETE FROM reviews");
+};
+
+exports.clearRevs = function () {
+  dblite.run("DELETE FROM stories");
+};
+
+
 //Add user
 exports.addUser = function(fname, lname, email, pword, callback) {
   dblite.run(
