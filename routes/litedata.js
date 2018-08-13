@@ -19,7 +19,7 @@ exports.initDB = function() {
 exports.addUser = function(fname, lname, email, pword, callback) {
   dblite.run(
     "INSERT INTO writers (fname, lname, email, pword, created, bonus) VALUES (?1, ?2, ?3, ?4, datetime('now'), ?5)",
-    { 1: fname, 2: lname, 3: email, 4: pword, 5: bonus},
+    { 1: fname, 2: lname, 3: email, 4: pword, 5: 5},
     function(err) {
       if (err) {
         console.log(err.message);
