@@ -1,7 +1,7 @@
 # Writers Workshop
 
 #### Intro
-A web app built for people to share and critique each other's work. 
+A web app built for people to share and critique each other's work. This was my first big project and it taught me a ton, including that sometimes you need to abandon a project.
 
 #### Categories
 - Flash Fiction (0 to 1200 words) tinyfict (1 point sub, 1 point rev)
